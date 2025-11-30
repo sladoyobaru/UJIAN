@@ -1,1 +1,1046 @@
-test
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLADOR EXAM</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2ecc71;
+            --secondary-dark: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .login-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .admin-login-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-login-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px 24px;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .btn-success {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            padding: 12px 24px;
+            font-weight: 600;
+        }
+        
+        .btn-success:hover {
+            background-color: var(--secondary-dark);
+            border-color: var(--secondary-dark);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .role-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 2px solid transparent;
+        }
+        
+        .role-card:hover {
+            border-color: var(--primary);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+        }
+        
+        .exam-card {
+            transition: all 0.3s ease;
+        }
+        
+        .exam-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .exam-card.inactive {
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+        
+        .exam-card.inactive:hover {
+            transform: none;
+        }
+        
+        .table-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .status-badge {
+            font-size: 0.75rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-buttons .btn {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+        }
+        
+        /* Modal khusus untuk login admin */
+        .admin-login-modal .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+        
+        .admin-login-modal .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        /* Animasi untuk alert */
+        .alert-slide {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Status indicator untuk card ujian */
+        .exam-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+        
+        .btn-disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Halaman Login Awal (User/Siswa) -->
+    <div id="initial-login-page">
+        <div class="login-hero">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 text-center mb-5">
+                        <h1 class="display-4 fw-bold">SLADOR EXAM</h1>
+                        <p class="lead">Sistem Ujian Online Terpadu</p>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card role-card">
+                            <div class="card-body p-5">
+                                <div class="text-center mb-4">
+                                    <i class="bi bi-person-circle display-1 text-primary"></i>
+                                    <h3 class="card-title mt-3">Login Siswa</h3>
+                                    <p class="text-muted">Masuk untuk mengikuti ujian</p>
+                                </div>
+                                <form id="user-login-form">
+                                    <div class="mb-3">
+                                        <label for="user-username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="user-username" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="user-password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="user-password" required>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">Masuk sebagai Siswa</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tombol Login Admin (Tersembunyi di pojok kanan bawah) -->
+            <button class="admin-login-btn" data-bs-toggle="modal" data-bs-target="#adminLoginModal">
+                <i class="bi bi-shield-lock me-1"></i> Login Admin
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Login Admin -->
+    <div class="modal fade admin-login-modal" id="adminLoginModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login Admin</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="admin-login-form">
+                        <div class="mb-3">
+                            <label for="admin-username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="admin-username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="admin-password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Masuk sebagai Admin</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Admin -->
+    <div id="admin-dashboard" class="d-none">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-pencil-square"></i> SLADOR EXAM - Admin
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="admin-nav-home">
+                                <i class="bi bi-house"></i> Beranda
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="admin-nav-logout">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <!-- Alert Area -->
+            <div id="alert-area"></div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Dashboard Admin</h2>
+                        <div>
+                            <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#subjectModal">
+                                <i class="bi bi-plus-circle"></i> Tambah Mata Pelajaran
+                            </button>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userModal">
+                                <i class="bi bi-people-fill"></i> Kelola Siswa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistik Cards -->
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="subject-count">0</h4>
+                                    <p>Mata Pelajaran</p>
+                                </div>
+                                <i class="bi bi-journal-text display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="user-count">0</h4>
+                                    <p>Akun Siswa</p>
+                                </div>
+                                <i class="bi bi-people display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="class-count">0</h4>
+                                    <p>Kelas</p>
+                                </div>
+                                <i class="bi bi-house-door display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="active-exam-count">0</h4>
+                                    <p>Ujian Aktif</p>
+                                </div>
+                                <i class="bi bi-check-circle display-6"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daftar Mata Pelajaran -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nama Mata Pelajaran</th>
+                                        <th>Tanggal Ujian</th>
+                                        <th>Link Ujian</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjects-table">
+                                    <!-- Data akan diisi via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard User -->
+    <div id="user-dashboard" class="d-none">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-pencil-square"></i> SLADOR EXAM
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavUser">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavUser">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <span class="nav-link">
+                                <i class="bi bi-person-circle"></i> 
+                                <span id="user-display-name"></span>
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="user-nav-logout">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <!-- Alert Area -->
+            <div id="user-alert-area"></div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h4 class="alert-heading">Daftar Ujian Tersedia</h4>
+                        <p class="mb-0">
+                            <i class="bi bi-info-circle"></i> 
+                            Semua mata pelajaran ditampilkan. Hanya ujian dengan status <span class="badge bg-success">AKTIF</span> yang dapat diikuti.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="user-exams">
+                <!-- Daftar ujian akan diisi via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Kelola Mata Pelajaran -->
+    <div class="modal fade" id="subjectModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subject-modal-title">Tambah Mata Pelajaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="subject-form">
+                        <input type="hidden" id="subject-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="subject-name" class="form-label">Nama Mata Pelajaran</label>
+                                <input type="text" class="form-control" id="subject-name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="exam-date" class="form-label">Tanggal Ujian</label>
+                                <input type="date" class="form-control" id="exam-date" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exam-link" class="form-label">Link Ujian (Google Form)</label>
+                            <input type="url" class="form-control" id="exam-link" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject-status" class="form-label">Status</label>
+                            <select class="form-select" id="subject-status">
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Tidak Aktif</option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="subject-submit-btn">Simpan Mata Pelajaran</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Kelola Siswa -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kelola Data Siswa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" id="userTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#importTab">Import dari Excel</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#manualTab">Tambah Manual</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3">
+                        <div class="tab-pane fade show active" id="importTab">
+                            <div class="alert alert-info">
+                                <h6>Petunjuk Import:</h6>
+                                <p class="mb-1">1. Salin data dari Excel dengan format: Username | Password | Nama | Kelas</p>
+                                <p class="mb-0">2. Tempel data di area berikut, lalu klik Proses Data</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="excel-data" class="form-label">Data Excel</label>
+                                <textarea class="form-control" id="excel-data" rows="5" placeholder="Tempel data Excel di sini..."></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="button" class="btn btn-success" id="process-excel">Proses Data</button>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="manualTab">
+                            <form id="user-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="new-username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="new-username" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="new-password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="new-password" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="student-name" class="form-label">Nama Siswa</label>
+                                        <input type="text" class="form-control" id="student-name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="student-class" class="form-label">Kelas</label>
+                                        <input type="text" class="form-control" id="student-class" required>
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Tambah Siswa</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h6>Daftar Siswa</h6>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Nama</th>
+                                        <th>Kelas</th>
+                                        <th>Password</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table">
+                                    <!-- Data siswa akan diisi via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Data contoh
+        let subjects = [
+            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active" },
+            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive" },
+            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active" },
+            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "inactive" },
+            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active" }
+        ];
+        
+        let users = [
+            { id: 1, username: "siswa1", password: "password123", name: "Andi Pratama", class: "10 IPA 1" },
+            { id: 2, username: "siswa2", password: "password123", name: "Budi Santoso", class: "10 IPA 1" },
+            { id: 3, username: "siswa3", password: "password123", name: "Citra Lestari", class: "10 IPA 2" }
+        ];
+
+        let currentUser = null;
+        let editingSubjectId = null;
+
+        // Inisialisasi halaman
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener untuk login forms
+            document.getElementById('user-login-form').addEventListener('submit', handleUserLogin);
+            document.getElementById('admin-login-form').addEventListener('submit', handleAdminLogin);
+            
+            // Event listener untuk admin functions
+            document.getElementById('subject-form').addEventListener('submit', handleSubjectForm);
+            document.getElementById('user-form').addEventListener('submit', handleUserForm);
+            document.getElementById('process-excel').addEventListener('click', processExcelData);
+            
+            // Event listener untuk logout
+            document.getElementById('admin-nav-logout').addEventListener('click', handleLogout);
+            document.getElementById('user-nav-logout').addEventListener('click', handleLogout);
+            
+            updateCounts();
+        });
+
+        // Fungsi untuk menampilkan alert
+        function showAlert(message, type, area = 'admin') {
+            const alertArea = area === 'user' ? 
+                document.getElementById('user-alert-area') : 
+                document.getElementById('alert-area');
+            
+            const alertId = 'alert-' + Date.now();
+            const alertHtml = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show alert-slide" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            alertArea.innerHTML = alertHtml;
+            
+            // Auto remove alert after 5 seconds
+            setTimeout(() => {
+                const alertElement = document.getElementById(alertId);
+                if (alertElement) {
+                    alertElement.remove();
+                }
+            }, 5000);
+        }
+
+        // Fungsi untuk login user
+        function handleUserLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('user-username').value;
+            const password = document.getElementById('user-password').value;
+            
+            // Reset form
+            e.target.reset();
+            
+            // Validasi sederhana
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = user;
+                showUserDashboard();
+                showAlert(`Selamat datang, ${user.name}!`, 'success', 'user');
+            } else {
+                showAlert('Username atau password salah!', 'danger');
+            }
+        }
+
+        // Fungsi untuk login admin
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+            
+            // Reset form dan tutup modal
+            e.target.reset();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('adminLoginModal'));
+            modal.hide();
+            
+            // Validasi admin
+            if (username === 'admin' && password === 'admin123') {
+                currentUser = { username: 'admin', role: 'admin' };
+                showAdminDashboard();
+                showAlert('Login admin berhasil!', 'success');
+            } else {
+                showAlert('Username atau password admin salah!', 'danger');
+            }
+        }
+
+        // Fungsi untuk menampilkan dashboard admin
+        function showAdminDashboard() {
+            document.getElementById('initial-login-page').classList.add('d-none');
+            document.getElementById('admin-dashboard').classList.remove('d-none');
+            updateSubjectsTable();
+            updateUsersTable();
+            updateCounts();
+        }
+
+        // Fungsi untuk menampilkan dashboard user
+        function showUserDashboard() {
+            document.getElementById('initial-login-page').classList.add('d-none');
+            document.getElementById('user-dashboard').classList.remove('d-none');
+            document.getElementById('user-display-name').textContent = currentUser.name;
+            updateUserExams();
+        }
+
+        // Fungsi untuk logout
+        function handleLogout() {
+            document.getElementById('admin-dashboard').classList.add('d-none');
+            document.getElementById('user-dashboard').classList.add('d-none');
+            document.getElementById('initial-login-page').classList.remove('d-none');
+            currentUser = null;
+        }
+
+        // Fungsi untuk update counts di dashboard admin
+        function updateCounts() {
+            document.getElementById('subject-count').textContent = subjects.length;
+            document.getElementById('user-count').textContent = users.length;
+            
+            // Hitung kelas unik
+            const uniqueClasses = [...new Set(users.map(user => user.class))];
+            document.getElementById('class-count').textContent = uniqueClasses.length;
+            
+            // Hitung ujian aktif
+            const activeExams = subjects.filter(subject => subject.status === 'active').length;
+            document.getElementById('active-exam-count').textContent = activeExams;
+        }
+
+        // Fungsi untuk update tabel mata pelajaran
+        function updateSubjectsTable() {
+            const tbody = document.getElementById('subjects-table');
+            tbody.innerHTML = '';
+            
+            if (subjects.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                            Belum ada mata pelajaran
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            subjects.forEach(subject => {
+                const row = document.createElement('tr');
+                const statusBadge = subject.status === 'active' ? 
+                    '<span class="badge bg-success status-badge">Aktif</span>' : 
+                    '<span class="badge bg-secondary status-badge">Nonaktif</span>';
+                
+                row.innerHTML = `
+                    <td>${subject.name}</td>
+                    <td>${new Date(subject.date).toLocaleDateString('id-ID')}</td>
+                    <td><a href="${subject.link}" target="_blank">Link Ujian</a></td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-outline-primary edit-subject" data-id="${subject.id}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger delete-subject" data-id="${subject.id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Add event listeners untuk edit dan delete
+            document.querySelectorAll('.edit-subject').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    editSubject(id);
+                });
+            });
+
+            document.querySelectorAll('.delete-subject').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deleteSubject(id);
+                });
+            });
+        }
+
+        // Fungsi untuk edit mata pelajaran
+        function editSubject(id) {
+            const subject = subjects.find(s => s.id === id);
+            if (subject) {
+                document.getElementById('subject-id').value = subject.id;
+                document.getElementById('subject-name').value = subject.name;
+                document.getElementById('exam-link').value = subject.link;
+                document.getElementById('exam-date').value = subject.date;
+                document.getElementById('subject-status').value = subject.status;
+                document.getElementById('subject-modal-title').textContent = 'Edit Mata Pelajaran';
+                document.getElementById('subject-submit-btn').textContent = 'Update Mata Pelajaran';
+                
+                editingSubjectId = id;
+                
+                const modal = new bootstrap.Modal(document.getElementById('subjectModal'));
+                modal.show();
+            }
+        }
+
+        // Fungsi untuk hapus mata pelajaran
+        function deleteSubject(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus mata pelajaran ini?')) {
+                subjects = subjects.filter(s => s.id !== id);
+                updateSubjectsTable();
+                updateCounts();
+                showAlert('Mata pelajaran berhasil dihapus!', 'success');
+            }
+        }
+
+        // Fungsi untuk update daftar ujian user - SEMUA SOAL DITAMPILKAN
+        function updateUserExams() {
+            const container = document.getElementById('user-exams');
+            container.innerHTML = '';
+            
+            if (subjects.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-warning text-center">
+                            <h5><i class="bi bi-exclamation-triangle"></i> Tidak ada ujian yang tersedia</h5>
+                            <p>Silakan hubungi administrator untuk informasi lebih lanjut.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Tampilkan SEMUA mata pelajaran, baik aktif maupun tidak aktif
+            subjects.forEach(subject => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-4';
+                
+                const isActive = subject.status === 'active';
+                const cardClass = isActive ? 'exam-card' : 'exam-card inactive';
+                const statusBadge = isActive ? 
+                    '<span class="exam-status badge bg-success">AKTIF</span>' : 
+                    '<span class="exam-status badge bg-secondary">TIDAK AKTIF</span>';
+                
+                const buttonHtml = isActive ? 
+                    `<a href="${subject.link}" target="_blank" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Ikuti Ujian
+                    </a>` :
+                    `<button class="btn btn-secondary w-100 btn-disabled" disabled>
+                        <i class="bi bi-lock"></i> Ujian Tidak Aktif
+                    </button>`;
+                
+                col.innerHTML = `
+                    <div class="card ${cardClass} h-100">
+                        <div class="card-body position-relative">
+                            ${statusBadge}
+                            <h5 class="card-title">${subject.name}</h5>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar-event"></i> 
+                                    ${new Date(subject.date).toLocaleDateString('id-ID')}
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                ${isActive ? 
+                                    'Ujian tersedia. Klik tombol di bawah untuk mengikuti ujian.' : 
+                                    'Ujian saat ini tidak aktif. Silakan hubungi administrator.'}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            ${buttonHtml}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+        }
+
+        // Fungsi untuk update tabel users
+        function updateUsersTable() {
+            const tbody = document.getElementById('users-table');
+            tbody.innerHTML = '';
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-people display-4 d-block mb-2"></i>
+                            Belum ada data siswa
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.name}</td>
+                    <td>${user.class}</td>
+                    <td>${user.password}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger delete-user" data-id="${user.id}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Add event listeners untuk delete user
+            document.querySelectorAll('.delete-user').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deleteUser(id);
+                });
+            });
+        }
+
+        // Fungsi untuk hapus user
+        function deleteUser(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
+                users = users.filter(u => u.id !== id);
+                updateUsersTable();
+                updateCounts();
+                showAlert('Siswa berhasil dihapus!', 'success');
+            }
+        }
+
+        // Fungsi untuk handle form mata pelajaran
+        function handleSubjectForm(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('subject-id').value;
+            const name = document.getElementById('subject-name').value;
+            const link = document.getElementById('exam-link').value;
+            const date = document.getElementById('exam-date').value;
+            const status = document.getElementById('subject-status').value;
+            
+            if (editingSubjectId) {
+                // Edit existing subject
+                const subjectIndex = subjects.findIndex(s => s.id === editingSubjectId);
+                if (subjectIndex !== -1) {
+                    subjects[subjectIndex] = { id: editingSubjectId, name, link, date, status };
+                    showAlert('Mata pelajaran berhasil diperbarui!', 'success');
+                }
+                editingSubjectId = null;
+            } else {
+                // Add new subject
+                const newSubject = {
+                    id: subjects.length > 0 ? Math.max(...subjects.map(s => s.id)) + 1 : 1,
+                    name,
+                    link,
+                    date,
+                    status
+                };
+                subjects.push(newSubject);
+                showAlert('Mata pelajaran berhasil ditambahkan!', 'success');
+            }
+            
+            // Reset form dan update UI
+            e.target.reset();
+            document.getElementById('subject-modal-title').textContent = 'Tambah Mata Pelajaran';
+            document.getElementById('subject-submit-btn').textContent = 'Simpan Mata Pelajaran';
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('subjectModal'));
+            modal.hide();
+            
+            updateSubjectsTable();
+            updateCounts();
+        }
+
+        // Fungsi untuk handle form user manual
+        function handleUserForm(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            const name = document.getElementById('student-name').value;
+            const studentClass = document.getElementById('student-class').value;
+            
+            // Cek duplikasi username
+            if (users.find(u => u.username === username)) {
+                showAlert('Username sudah digunakan!', 'danger');
+                return;
+            }
+            
+            const newUser = {
+                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                username,
+                password,
+                name,
+                class: studentClass
+            };
+            
+            users.push(newUser);
+            
+            // Reset form dan update UI
+            e.target.reset();
+            updateUsersTable();
+            updateCounts();
+            
+            showAlert('Siswa berhasil ditambahkan!', 'success');
+        }
+
+        // Fungsi untuk proses data Excel
+        function processExcelData() {
+            const data = document.getElementById('excel-data').value.trim();
+            if (!data) {
+                showAlert('Silakan tempel data dari Excel terlebih dahulu!', 'warning');
+                return;
+            }
+            
+            const lines = data.split('\n');
+            let successCount = 0;
+            let errorCount = 0;
+            
+            lines.forEach(line => {
+                if (line.trim()) {
+                    const columns = line.split('\t').map(col => col.trim());
+                    if (columns.length >= 4) {
+                        const [username, password, name, studentClass] = columns;
+                        
+                        if (!users.find(u => u.username === username)) {
+                            const newUser = {
+                                id: users.length + 1,
+                                username,
+                                password,
+                                name,
+                                class: studentClass
+                            };
+                            users.push(newUser);
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } else {
+                        errorCount++;
+                    }
+                }
+            });
+            
+            // Update UI
+            updateUsersTable();
+            updateCounts();
+            document.getElementById('excel-data').value = '';
+            
+            let message = `Berhasil mengimpor ${successCount} siswa!`;
+            if (errorCount > 0) {
+                message += ` ${errorCount} data gagal (format salah atau username duplikat).`;
+            }
+            
+            showAlert(message, successCount > 0 ? 'success' : 'warning');
+        }
+    </script>
+</body>
+</html>
