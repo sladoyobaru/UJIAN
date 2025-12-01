@@ -494,14 +494,15 @@
                                 <label for="subject-class" class="form-label">Kelas</label>
                                 <select class="form-select" id="subject-class" required>
                                     <option value="">Pilih Kelas</option>
-                                    <option value="10 IPA 1">10 IPA 1</option>
-                                    <option value="10 IPA 2">10 IPA 2</option>
-                                    <option value="10 IPS 1">10 IPS 1</option>
-                                    <option value="10 IPS 2">10 IPS 2</option>
-                                    <option value="11 IPA 1">11 IPA 1</option>
-                                    <option value="11 IPA 2">11 IPA 2</option>
-                                    <option value="11 IPS 1">11 IPS 1</option>
-                                    <option value="11 IPS 2">11 IPS 2</option>
+                                    <option value="VII A">VII A</option>
+                                    <option value="VII B">VII B</option>
+                                    <option value="VII C">VII C</option>
+                                    <option value="VIII A">VIII A</option>
+                                    <option value="VIII B">VIII B</option>
+                                    <option value="VIII C">VIII C</option>
+                                    <option value="IX A">IX A</option>
+                                    <option value="IX B">IX B</option>
+                                    <option value="IX C">IX C</option>
                                     <option value="Semua Kelas">Semua Kelas</option>
                                 </select>
                             </div>
@@ -587,14 +588,15 @@
                                         <label for="student-class" class="form-label">Kelas</label>
                                         <select class="form-select" id="student-class" required>
                                             <option value="">Pilih Kelas</option>
-                                            <option value="10 IPA 1">10 IPA 1</option>
-                                            <option value="10 IPA 2">10 IPA 2</option>
-                                            <option value="10 IPS 1">10 IPS 1</option>
-                                            <option value="10 IPS 2">10 IPS 2</option>
-                                            <option value="11 IPA 1">11 IPA 1</option>
-                                            <option value="11 IPA 2">11 IPA 2</option>
-                                            <option value="11 IPS 1">11 IPS 1</option>
-                                            <option value="11 IPS 2">11 IPS 2</option>
+                                            <option value="VII A">VII A</option>
+                                            <option value="VII B">VII B</option>
+                                            <option value="VII C">VII C</option>
+                                            <option value="VIII A">VIII A</option>
+                                            <option value="VIII B">VIII B</option>
+                                            <option value="VIII C">VIII C</option>
+                                            <option value="IX A">IX A</option>
+                                            <option value="IX B">IX B</option>
+                                            <option value="IX C">IX C</option>
                                         </select>
                                     </div>
                                 </div>
@@ -634,28 +636,28 @@
     <script>
         // Data contoh dengan atribut kelas
         let subjects = [
-            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "10 IPA 1" },
-            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "10 IPA 1" },
-            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "10 IPA 2" },
-            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "10 IPS 1" },
-            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10 IPS 2" },
-            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11 IPA 1" },
-            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11 IPA 2" },
-            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "11 IPS 1" },
-            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "11 IPS 2" },
+            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "VII A" },
+            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "VII A" },
+            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "VII B" },
+            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "VII C" },
+            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "VIII A" },
+            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "VIII B" },
+            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "VIII C" },
+            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "IX A" },
+            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "IX B" },
             { id: 10, name: "Ujian Umum", link: "https://forms.google.com/general-exam", date: "2023-12-10", status: "active", class: "Semua Kelas" }
         ];
         
         let users = [
-            { id: 1, username: "siswa1", password: "password123", name: "Andi Pratama", class: "10 IPA 1" },
-            { id: 2, username: "siswa2", password: "password123", name: "Budi Santoso", class: "10 IPA 1" },
-            { id: 3, username: "siswa3", password: "password123", name: "Citra Lestari", class: "10 IPA 2" },
-            { id: 4, username: "siswa4", password: "password123", name: "Dewi Anggraini", class: "10 IPS 1" },
-            { id: 5, username: "siswa5", password: "password123", name: "Eko Prasetyo", class: "10 IPS 2" },
-            { id: 6, username: "siswa6", password: "password123", name: "Fajar Nugroho", class: "11 IPA 1" },
-            { id: 7, username: "siswa7", password: "password123", name: "Gita Wulandari", class: "11 IPA 2" },
-            { id: 8, username: "siswa8", password: "password123", name: "Hendra Setiawan", class: "11 IPS 1" },
-            { id: 9, username: "siswa9", password: "password123", name: "Indah Permata", class: "11 IPS 2" }
+            { id: 1, username: "siswa1", password: "password123", name: "Andi Pratama", class: "VII A" },
+            { id: 2, username: "siswa2", password: "password123", name: "Budi Santoso", class: "VII A" },
+            { id: 3, username: "siswa3", password: "password123", name: "Citra Lestari", class: "VII B" },
+            { id: 4, username: "siswa4", password: "password123", name: "Dewi Anggraini", class: "VII C" },
+            { id: 5, username: "siswa5", password: "password123", name: "Eko Prasetyo", class: "VIII A" },
+            { id: 6, username: "siswa6", password: "password123", name: "Fajar Nugroho", class: "VIII B" },
+            { id: 7, username: "siswa7", password: "password123", name: "Gita Wulandari", class: "VIII C" },
+            { id: 8, username: "siswa8", password: "password123", name: "Hendra Setiawan", class: "IX A" },
+            { id: 9, username: "siswa9", password: "password123", name: "Indah Permata", class: "IX B" }
         ];
 
         let currentUser = null;
