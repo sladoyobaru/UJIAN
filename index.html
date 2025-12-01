@@ -235,6 +235,17 @@
             font-size: 0.875rem;
             color: var(--gray);
         }
+        
+        /* Kelas grouping dalam select */
+        .class-option-group {
+            font-weight: bold;
+            color: var(--primary);
+            background-color: #e8f4fd;
+        }
+        
+        .class-option {
+            padding-left: 20px;
+        }
     </style>
 </head>
 <body>
@@ -535,14 +546,42 @@
                                 <label for="subject-class" class="form-label">Kelas *</label>
                                 <select class="form-select" id="subject-class" required>
                                     <option value="">Pilih Kelas</option>
-                                    <option value="10 IPA 1">10 IPA 1</option>
-                                    <option value="10 IPA 2">10 IPA 2</option>
-                                    <option value="10 IPS 1">10 IPS 1</option>
-                                    <option value="10 IPS 2">10 IPS 2</option>
-                                    <option value="11 IPA 1">11 IPA 1</option>
-                                    <option value="11 IPA 2">11 IPA 2</option>
-                                    <option value="11 IPS 1">11 IPS 1</option>
-                                    <option value="11 IPS 2">11 IPS 2</option>
+                                    <optgroup label="Kelas 7" class="class-option-group">
+                                        <option value="7A" class="class-option">7A</option>
+                                        <option value="7B" class="class-option">7B</option>
+                                        <option value="7C" class="class-option">7C</option>
+                                        <option value="7D" class="class-option">7D</option>
+                                    </optgroup>
+                                    <optgroup label="Kelas 8" class="class-option-group">
+                                        <option value="8A" class="class-option">8A</option>
+                                        <option value="8B" class="class-option">8B</option>
+                                        <option value="8C" class="class-option">8C</option>
+                                        <option value="8D" class="class-option">8D</option>
+                                    </optgroup>
+                                    <optgroup label="Kelas 9" class="class-option-group">
+                                        <option value="9A" class="class-option">9A</option>
+                                        <option value="9B" class="class-option">9B</option>
+                                        <option value="9C" class="class-option">9C</option>
+                                        <option value="9D" class="class-option">9D</option>
+                                    </optgroup>
+                                    <optgroup label="Kelas 10" class="class-option-group">
+                                        <option value="10A" class="class-option">10A</option>
+                                        <option value="10B" class="class-option">10B</option>
+                                        <option value="10C" class="class-option">10C</option>
+                                        <option value="10D" class="class-option">10D</option>
+                                    </optgroup>
+                                    <optgroup label="Kelas 11" class="class-option-group">
+                                        <option value="11A" class="class-option">11A</option>
+                                        <option value="11B" class="class-option">11B</option>
+                                        <option value="11C" class="class-option">11C</option>
+                                        <option value="11D" class="class-option">11D</option>
+                                    </optgroup>
+                                    <optgroup label="Kelas 12" class="class-option-group">
+                                        <option value="12A" class="class-option">12A</option>
+                                        <option value="12B" class="class-option">12B</option>
+                                        <option value="12C" class="class-option">12C</option>
+                                        <option value="12D" class="class-option">12D</option>
+                                    </optgroup>
                                     <option value="Semua Kelas">Semua Kelas</option>
                                 </select>
                                 <div class="invalid-feedback">Silakan pilih kelas</div>
@@ -606,7 +645,7 @@
                             <div class="mb-3">
                                 <label for="excel-data" class="form-label">Data Excel</label>
                                 <textarea class="form-control" id="excel-data" rows="5" 
-                                          placeholder="Tempel data Excel di sini...&#10;Contoh:&#10;123456  password123  Andi Pratama  10 IPA 1&#10;123457  password456  Budi Santoso  10 IPA 2"></textarea>
+                                          placeholder="Tempel data Excel di sini...&#10;Contoh:&#10;123456  password123  Andi Pratama  7A&#10;123457  password456  Budi Santoso  8B"></textarea>
                                 <div class="form-text">Format: NIS (angka) | Password | Nama Lengkap | Kelas</div>
                             </div>
                             <div class="d-grid">
@@ -641,14 +680,42 @@
                                         <label for="student-class" class="form-label">Kelas *</label>
                                         <select class="form-select" id="student-class" required>
                                             <option value="">Pilih Kelas</option>
-                                            <option value="10 IPA 1">10 IPA 1</option>
-                                            <option value="10 IPA 2">10 IPA 2</option>
-                                            <option value="10 IPS 1">10 IPS 1</option>
-                                            <option value="10 IPS 2">10 IPS 2</option>
-                                            <option value="11 IPA 1">11 IPA 1</option>
-                                            <option value="11 IPA 2">11 IPA 2</option>
-                                            <option value="11 IPS 1">11 IPS 1</option>
-                                            <option value="11 IPS 2">11 IPS 2</option>
+                                            <optgroup label="Kelas 7">
+                                                <option value="7A">7A</option>
+                                                <option value="7B">7B</option>
+                                                <option value="7C">7C</option>
+                                                <option value="7D">7D</option>
+                                            </optgroup>
+                                            <optgroup label="Kelas 8">
+                                                <option value="8A">8A</option>
+                                                <option value="8B">8B</option>
+                                                <option value="8C">8C</option>
+                                                <option value="8D">8D</option>
+                                            </optgroup>
+                                            <optgroup label="Kelas 9">
+                                                <option value="9A">9A</option>
+                                                <option value="9B">9B</option>
+                                                <option value="9C">9C</option>
+                                                <option value="9D">9D</option>
+                                            </optgroup>
+                                            <optgroup label="Kelas 10">
+                                                <option value="10A">10A</option>
+                                                <option value="10B">10B</option>
+                                                <option value="10C">10C</option>
+                                                <option value="10D">10D</option>
+                                            </optgroup>
+                                            <optgroup label="Kelas 11">
+                                                <option value="11A">11A</option>
+                                                <option value="11B">11B</option>
+                                                <option value="11C">11C</option>
+                                                <option value="11D">11D</option>
+                                            </optgroup>
+                                            <optgroup label="Kelas 12">
+                                                <option value="12A">12A</option>
+                                                <option value="12B">12B</option>
+                                                <option value="12C">12C</option>
+                                                <option value="12D">12D</option>
+                                            </optgroup>
                                         </select>
                                         <div class="invalid-feedback">Silakan pilih kelas</div>
                                     </div>
@@ -758,34 +825,46 @@
             return isValid;
         }
 
-        // Data awal dengan localStorage
+        // Data awal dengan localStorage - Diperbarui dengan kelas baru
         let subjects = loadFromLocalStorage('slador_subjects', [
-            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "10 IPA 1" },
-            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "10 IPA 1" },
-            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "10 IPA 2" },
-            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "10 IPS 1" },
-            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10 IPS 2" },
-            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11 IPA 1" },
-            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11 IPA 2" },
-            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "11 IPS 1" },
-            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "11 IPS 2" },
+            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "7A" },
+            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "7A" },
+            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "8B" },
+            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "9C" },
+            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10D" },
+            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11A" },
+            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11B" },
+            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "12C" },
+            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "12D" },
             { id: 10, name: "Ujian Umum", link: "https://forms.google.com/general-exam", date: "2023-12-10", status: "active", class: "Semua Kelas" }
         ]);
         
         let users = loadFromLocalStorage('slador_users', [
-            { id: 1, nis: "123456", password: "password123", name: "Andi Pratama", class: "10 IPA 1" },
-            { id: 2, nis: "123457", password: "password123", name: "Budi Santoso", class: "10 IPA 1" },
-            { id: 3, nis: "123458", password: "password123", name: "Citra Lestari", class: "10 IPA 2" },
-            { id: 4, nis: "123459", password: "password123", name: "Dewi Anggraini", class: "10 IPS 1" },
-            { id: 5, nis: "123460", password: "password123", name: "Eko Prasetyo", class: "10 IPS 2" },
-            { id: 6, nis: "123461", password: "password123", name: "Fajar Nugroho", class: "11 IPA 1" },
-            { id: 7, nis: "123462", password: "password123", name: "Gita Wulandari", class: "11 IPA 2" },
-            { id: 8, nis: "123463", password: "password123", name: "Hendra Setiawan", class: "11 IPS 1" },
-            { id: 9, nis: "123464", password: "password123", name: "Indah Permata", class: "11 IPS 2" }
+            { id: 1, nis: "230701", password: "password123", name: "Andi Pratama", class: "7A" },
+            { id: 2, nis: "230702", password: "password123", name: "Budi Santoso", class: "7B" },
+            { id: 3, nis: "230703", password: "password123", name: "Citra Lestari", class: "7C" },
+            { id: 4, nis: "230704", password: "password123", name: "Dewi Anggraini", class: "7D" },
+            { id: 5, nis: "220801", password: "password123", name: "Eko Prasetyo", class: "8A" },
+            { id: 6, nis: "220802", password: "password123", name: "Fajar Nugroho", class: "8B" },
+            { id: 7, nis: "220803", password: "password123", name: "Gita Wulandari", class: "8C" },
+            { id: 8, nis: "220804", password: "password123", name: "Hendra Setiawan", class: "8D" },
+            { id: 9, nis: "210901", password: "password123", name: "Indah Permata", class: "9A" },
+            { id: 10, nis: "210902", password: "password123", name: "Joko Widodo", class: "9B" }
         ]);
 
         let currentUser = null;
         let editingSubjectId = null;
+
+        // Daftar kelas yang tersedia
+        const availableClasses = [
+            '7A', '7B', '7C', '7D',
+            '8A', '8B', '8C', '8D', 
+            '9A', '9B', '9C', '9D',
+            '10A', '10B', '10C', '10D',
+            '11A', '11B', '11C', '11D',
+            '12A', '12B', '12C', '12D',
+            'Semua Kelas'
+        ];
 
         // Inisialisasi halaman
         document.addEventListener('DOMContentLoaded', function() {
@@ -1238,6 +1317,12 @@
                 return;
             }
             
+            // Validasi kelas
+            if (!availableClasses.includes(studentClass) && studentClass !== 'Semua Kelas') {
+                showToast('Kelas yang dipilih tidak valid!', 'danger');
+                return;
+            }
+            
             const newUser = {
                 id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
                 nis,
@@ -1295,6 +1380,13 @@
                         // Validasi nama (minimal 3 karakter)
                         if (name.length < 3) {
                             errors.push(`Baris ${index + 1}: Nama minimal 3 karakter`);
+                            errorCount++;
+                            return;
+                        }
+                        
+                        // Validasi kelas
+                        if (!availableClasses.includes(studentClass) && studentClass !== 'Semua Kelas') {
+                            errors.push(`Baris ${index + 1}: Kelas "${studentClass}" tidak valid`);
                             errorCount++;
                             return;
                         }
