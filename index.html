@@ -3,1863 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLADOR EXAM</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <title>Login dengan Google Sheets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #3498db;
-            --primary-dark: #2980b9;
-            --secondary: #2ecc71;
-            --secondary-dark: #27ae60;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
-            --gray: #95a5a6;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             min-height: 100vh;
-        }
-        
-        .login-hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-        
-        .admin-login-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-        }
-        
-        .admin-login-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 12px 24px;
-            font-weight: 600;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-        
-        .btn-success {
-            background-color: var(--secondary);
-            border-color: var(--secondary);
-            padding: 12px 24px;
-            font-weight: 600;
-        }
-        
-        .btn-success:hover {
-            background-color: var(--secondary-dark);
-            border-color: var(--secondary-dark);
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
-        }
-        
-        .role-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            height: 100%;
-            border: 2px solid transparent;
-        }
-        
-        .role-card:hover {
-            border-color: var(--primary);
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-        }
-        
-        .exam-card {
-            transition: all 0.3s ease;
-        }
-        
-        .exam-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .exam-card.inactive {
-            opacity: 0.7;
-            background-color: #f8f9fa;
-        }
-        
-        .exam-card.inactive:hover {
-            transform: none;
-        }
-        
-        .table-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .status-badge {
-            font-size: 0.75rem;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .action-buttons .btn {
-            padding: 4px 8px;
-            font-size: 0.75rem;
-        }
-        
-        /* Modal khusus untuk login admin */
-        .admin-login-modal .modal-content {
-            border-radius: 15px;
-            border: none;
-        }
-        
-        .admin-login-modal .modal-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-radius: 15px 15px 0 0;
-        }
-        
-        /* Animasi untuk alert */
-        .alert-slide {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Status indicator untuk card ujian */
-        .exam-status {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 20px;
-        }
-        
-        .btn-disabled {
-            pointer-events: none;
-            opacity: 0.5;
-        }
-        
-        .class-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 15px;
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .user-class-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        /* Toast notification */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1055;
-        }
-        
-        .toast {
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Validation styles */
-        .is-invalid {
-            border-color: var(--danger) !important;
-        }
-        
-        .invalid-feedback {
-            display: block;
-            color: var(--danger);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-        
-        .form-text {
-            font-size: 0.875rem;
-            color: var(--gray);
-        }
-        
-        /* Kelas grouping dalam select */
-        .class-option-group {
-            font-weight: bold;
-            color: var(--primary);
-            background-color: #e8f4fd;
-        }
-        
-        .class-option {
-            padding-left: 20px;
-        }
-        
-        /* Loading spinner */
-        .spinner-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 200px;
+            padding: 20px;
         }
         
-        .spinner-border {
-            width: 3rem;
-            height: 3rem;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            background: white;
+            border-bottom: 3px solid #2575fc;
+            color: #2575fc;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .form {
+            display: none;
+        }
+        
+        .form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            border-color: #2575fc;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.1);
+        }
+        
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 45px;
+            color: #6c757d;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(37, 117, 252, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .dashboard {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        .dashboard h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .user-info p {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+            color: #2575fc;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .api-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .api-info h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .instructions {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-top: 40px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .instructions h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .step {
+            margin-bottom: 25px;
+            padding-left: 20px;
+            border-left: 4px solid #2575fc;
+        }
+        
+        .step h3 {
+            color: #2575fc;
+            margin-bottom: 10px;
+        }
+        
+        .step p {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .step code {
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            color: #d63384;
+        }
+        
+        @media (max-width: 768px) {
+            .form-container, .dashboard, .instructions {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Toast Notification Container -->
-    <div class="toast-container"></div>
-
-    <!-- Halaman Login Awal (User/Siswa) -->
-    <div id="initial-login-page">
-        <div class="login-hero">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-8 text-center mb-5">
-                        <h1 class="display-4 fw-bold">SLADOR EXAM</h1>
-                        <p class="lead">Sistem Ujian Online Terpadu</p>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card role-card">
-                            <div class="card-body p-5">
-                                <div class="text-center mb-4">
-                                    <i class="bi bi-person-circle display-1 text-primary"></i>
-                                    <h3 class="card-title mt-3">Login Siswa</h3>
-                                    <p class="text-muted">Masuk dengan NIS dan Password</p>
-                                </div>
-                                <form id="user-login-form">
-                                    <div class="mb-3">
-                                        <label for="user-nis" class="form-label">NIS (Nomor Induk Siswa)</label>
-                                        <input type="text" class="form-control" id="user-nis" required
-                                               pattern="[0-9]+" 
-                                               title="NIS harus berupa angka">
-                                        <div class="form-text">Masukkan NIS Anda (hanya angka)</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="user-password" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="user-password" required
-                                               minlength="6"
-                                               title="Password minimal 6 karakter">
-                                        <div class="form-text">Password minimal 6 karakter</div>
-                                    </div>
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary btn-lg">
-                                            <span id="login-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
-                                            Masuk sebagai Siswa
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-sign-in-alt"></i> Login dengan Google Sheets</h1>
+            <p>Sistem login yang menggunakan Google Sheets sebagai database untuk menyimpan data pengguna</p>
+        </div>
+        
+        <!-- Form Login/Register -->
+        <div id="auth-section">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">Login</div>
+                <div class="tab" onclick="switchTab('register')">Register</div>
             </div>
             
-            <!-- Tombol Login Admin (Tersembunyi di pojok kanan bawah) -->
-            <button class="admin-login-btn" data-bs-toggle="modal" data-bs-target="#adminLoginModal">
-                <i class="bi bi-shield-lock me-1"></i> Login Admin
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal Login Admin -->
-    <div class="modal fade admin-login-modal" id="adminLoginModal" tabindex="-1">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Login Admin</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="form-container">
+                <!-- Login Form -->
+                <div id="login-form" class="form active">
+                    <h2 class="form-title">Masuk ke Akun Anda</h2>
+                    <div class="input-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" placeholder="Masukkan username">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Masukkan password">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <button class="btn" onclick="login()">Login</button>
+                    <div id="login-message" class="message"></div>
                 </div>
-                <div class="modal-body">
-                    <form id="admin-login-form">
-                        <div class="mb-3">
-                            <label for="admin-username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="admin-username" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="admin-password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="admin-password" required>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success">Masuk sebagai Admin</button>
-                        </div>
-                    </form>
+                
+                <!-- Register Form -->
+                <div id="register-form" class="form">
+                    <h2 class="form-title">Buat Akun Baru</h2>
+                    <div class="input-group">
+                        <label for="register-fullname">Nama Lengkap</label>
+                        <input type="text" id="register-fullname" placeholder="Masukkan nama lengkap">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="input-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" placeholder="Masukkan email">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="input-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" placeholder="Buat username">
+                        <i class="fas fa-user-tag"></i>
+                    </div>
+                    <div class="input-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" placeholder="Buat password">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <button class="btn" onclick="register()">Daftar</button>
+                    <div id="register-message" class="message"></div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Dashboard Admin -->
-    <div id="admin-dashboard" class="d-none">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="bi bi-pencil-square"></i> SLADOR EXAM - Admin
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="admin-nav-home">
-                                <i class="bi bi-house"></i> Beranda
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="admin-nav-logout">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+        
+        <!-- Dashboard setelah login -->
+        <div id="dashboard" class="dashboard">
+            <h2>Selamat Datang di Dashboard</h2>
+            <div class="user-info">
+                <p><span>Username:</span> <span id="dashboard-username"></span></p>
+                <p><span>Email:</span> <span id="dashboard-email"></span></p>
+                <p><span>Nama Lengkap:</span> <span id="dashboard-fullname"></span></p>
+                <p><span>Status:</span> <span style="color: #28a745;">Berhasil Login</span></p>
             </div>
-        </nav>
-
-        <div class="container mt-4">
-            <!-- Alert Area -->
-            <div id="alert-area"></div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Dashboard Admin</h2>
-                        <div>
-                            <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#subjectModal">
-                                <i class="bi bi-plus-circle"></i> Tambah Mata Pelajaran
-                            </button>
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userModal">
-                                <i class="bi bi-people-fill"></i> Kelola Siswa
-                            </button>
-                            <button class="btn btn-warning ms-2" id="sync-data-btn">
-                                <i class="bi bi-arrow-repeat"></i> Sync Data
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <p>Anda berhasil login menggunakan data dari Google Sheets</p>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            
+            <div class="api-info">
+                <h3>Info API Google Apps Script</h3>
+                <p>Data login disimpan dan diambil dari Google Sheets melalui Google Apps Script yang berfungsi sebagai API backend.</p>
+                <p>Ganti URL API di JavaScript dengan URL Web App Anda setelah mendeploy Google Apps Script.</p>
             </div>
-
-            <!-- Statistik Cards -->
-            <div class="row">
-                <div class="col-md-3 mb-4">
-                    <div class="card bg-primary text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 id="subject-count">0</h4>
-                                    <p>Mata Pelajaran</p>
-                                </div>
-                                <i class="bi bi-journal-text display-6"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card bg-success text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 id="user-count">0</h4>
-                                    <p>Akun Siswa</p>
-                                </div>
-                                <i class="bi bi-people display-6"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card bg-warning text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 id="class-count">0</h4>
-                                    <p>Kelas</p>
-                                </div>
-                                <i class="bi bi-house-door display-6"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card bg-info text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 id="active-exam-count">0</h4>
-                                    <p>Ujian Aktif</p>
-                                </div>
-                                <i class="bi bi-check-circle display-6"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        </div>
+        
+        <!-- Petunjuk Penggunaan -->
+        <div class="instructions">
+            <h2><i class="fas fa-info-circle"></i> Petunjuk Penggunaan</h2>
+            <div class="step">
+                <h3>Langkah 1: Siapkan Google Sheets</h3>
+                <p>Buat spreadsheet baru dengan sheet bernama "Users" dan kolom: Username, Password, Email, Nama Lengkap.</p>
             </div>
-
-            <!-- Daftar Mata Pelajaran -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="table-container">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nama Mata Pelajaran</th>
-                                        <th>Kelas</th>
-                                        <th>Tanggal Ujian</th>
-                                        <th>Link Ujian</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="subjects-table">
-                                    <!-- Data akan diisi via JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+            <div class="step">
+                <h3>Langkah 2: Buat Google Apps Script</h3>
+                <p>Buka script editor dari spreadsheet, salin kode Apps Script, dan ganti <code>SHEET_ID</code> dengan ID spreadsheet Anda.</p>
+            </div>
+            <div class="step">
+                <h3>Langkah 3: Deploy sebagai Web App</h3>
+                <p>Deploy script sebagai Web App dengan akses "Anyone" (dapat dibatasi sesuai kebutuhan).</p>
+            </div>
+            <div class="step">
+                <h3>Langkah 4: Update URL API</h3>
+                <p>Ganti <code>API_URL</code> di kode JavaScript dengan URL Web App yang Anda dapatkan setelah mendeploy.</p>
             </div>
         </div>
     </div>
 
-    <!-- Dashboard User -->
-    <div id="user-dashboard" class="d-none">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="bi bi-pencil-square"></i> SLADOR EXAM
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavUser">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavUser">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <span class="nav-link">
-                                <i class="bi bi-person-circle"></i> 
-                                <span id="user-display-name"></span>
-                                <span class="badge bg-light text-dark ms-1" id="user-class-badge"></span>
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="user-nav-logout">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <div class="container mt-4">
-            <!-- Alert Area -->
-            <div id="user-alert-area"></div>
-
-            <!-- Info Kelas User -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card user-class-info">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h5 class="card-title mb-1">
-                                        <i class="bi bi-house-door-fill"></i>
-                                        Ujian untuk Kelas <span id="current-user-class" class="fw-bold"></span>
-                                    </h5>
-                                    <p class="card-text mb-0">Berikut adalah daftar ujian yang tersedia untuk kelas Anda</p>
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <span class="badge bg-light text-dark fs-6">
-                                        <i class="bi bi-funnel"></i>
-                                        Filter: Kelas <span id="filter-class-display"></span>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row" id="user-exams">
-                <!-- Daftar ujian akan diisi via JavaScript -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal untuk Kelola Mata Pelajaran -->
-    <div class="modal fade" id="subjectModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="subject-modal-title">Tambah Mata Pelajaran</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="subject-form" novalidate>
-                        <input type="hidden" id="subject-id">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="subject-name" class="form-label">Nama Mata Pelajaran *</label>
-                                <input type="text" class="form-control" id="subject-name" required
-                                       minlength="3" maxlength="50">
-                                <div class="invalid-feedback">Nama mata pelajaran harus 3-50 karakter</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="subject-class" class="form-label">Kelas *</label>
-                                <select class="form-select" id="subject-class" required>
-                                    <option value="">Pilih Kelas</option>
-                                    <optgroup label="Kelas 7" class="class-option-group">
-                                        <option value="7A" class="class-option">7A</option>
-                                        <option value="7B" class="class-option">7B</option>
-                                        <option value="7C" class="class-option">7C</option>
-                                        <option value="7D" class="class-option">7D</option>
-                                    </optgroup>
-                                    <optgroup label="Kelas 8" class="class-option-group">
-                                        <option value="8A" class="class-option">8A</option>
-                                        <option value="8B" class="class-option">8B</option>
-                                        <option value="8C" class="class-option">8C</option>
-                                        <option value="8D" class="class-option">8D</option>
-                                    </optgroup>
-                                    <optgroup label="Kelas 9" class="class-option-group">
-                                        <option value="9A" class="class-option">9A</option>
-                                        <option value="9B" class="class-option">9B</option>
-                                        <option value="9C" class="class-option">9C</option>
-                                        <option value="9D" class="class-option">9D</option>
-                                    </optgroup>
-                                    <optgroup label="Kelas 10" class="class-option-group">
-                                        <option value="10A" class="class-option">10A</option>
-                                        <option value="10B" class="class-option">10B</option>
-                                        <option value="10C" class="class-option">10C</option>
-                                        <option value="10D" class="class-option">10D</option>
-                                    </optgroup>
-                                    <optgroup label="Kelas 11" class="class-option-group">
-                                        <option value="11A" class="class-option">11A</option>
-                                        <option value="11B" class="class-option">11B</option>
-                                        <option value="11C" class="class-option">11C</option>
-                                        <option value="11D" class="class-option">11D</option>
-                                    </optgroup>
-                                    <optgroup label="Kelas 12" class="class-option-group">
-                                        <option value="12A" class="class-option">12A</option>
-                                        <option value="12B" class="class-option">12B</option>
-                                        <option value="12C" class="class-option">12C</option>
-                                        <option value="12D" class="class-option">12D</option>
-                                    </optgroup>
-                                    <option value="Semua Kelas">Semua Kelas</option>
-                                </select>
-                                <div class="invalid-feedback">Silakan pilih kelas</div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="exam-date" class="form-label">Tanggal Ujian *</label>
-                                <input type="date" class="form-control" id="exam-date" required>
-                                <div class="invalid-feedback">Silakan pilih tanggal ujian</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="subject-status" class="form-label">Status *</label>
-                                <select class="form-select" id="subject-status" required>
-                                    <option value="active">Aktif</option>
-                                    <option value="inactive">Tidak Aktif</option>
-                                </select>
-                                <div class="invalid-feedback">Silakan pilih status</div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="exam-link" class="form-label">Link Ujian (Google Form) *</label>
-                            <input type="url" class="form-control" id="exam-link" required
-                                   pattern="https?://.+">
-                            <div class="invalid-feedback">Link harus berupa URL yang valid (contoh: https://forms.google.com/...)</div>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" id="subject-submit-btn">
-                                <span id="subject-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
-                                Simpan Mata Pelajaran
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal untuk Kelola Siswa -->
-    <div class="modal fade" id="userModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Kelola Data Siswa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <h6>Informasi Database:</h6>
-                        <p class="mb-0">Data siswa tersimpan di Google Sheets dan dapat diakses dari semua device. 
-                        Untuk menambah data siswa, gunakan Google Sheets berikut: 
-                        <a href="https://docs.google.com/spreadsheets/d/1e6Xp58rBjyUMVJNlS7PAuHdNc0NTgBqwfJAmnS3PYWg/edit?usp=sharing" target="_blank">
-                            <i class="bi bi-box-arrow-up-right"></i> Buka Database Siswa
-                        </a></p>
-                    </div>
-
-                    <ul class="nav nav-tabs" id="userTabs">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#importTab">Import dari Excel</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#manualTab">Tambah Manual ke Database</a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content mt-3">
-                        <div class="tab-pane fade show active" id="importTab">
-                            <div class="alert alert-info">
-                                <h6>Petunjuk Import:</h6>
-                                <p class="mb-1">1. Salin data dari Excel dengan format: <strong>NIS | Password | Nama | Kelas</strong></p>
-                                <p class="mb-0">2. Tempel data di area berikut, lalu klik Proses Data</p>
-                            </div>
-                            <div class="mb-3">
-                                <label for="excel-data" class="form-label">Data Excel</label>
-                                <textarea class="form-control" id="excel-data" rows="5" 
-                                          placeholder="Tempel data Excel di sini...&#10;Contoh:&#10;123456  password123  Andi Pratama  7A&#10;123457  password456  Budi Santoso  8B"></textarea>
-                                <div class="form-text">Format: NIS (angka) | Password | Nama Lengkap | Kelas</div>
-                            </div>
-                            <div class="d-grid">
-                                <button type="button" class="btn btn-success" id="process-excel">
-                                    <span id="excel-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
-                                    Proses Data
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="manualTab">
-                            <form id="user-form" novalidate>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="new-nis" class="form-label">NIS (Nomor Induk Siswa) *</label>
-                                        <input type="text" class="form-control" id="new-nis" required
-                                               pattern="[0-9]+" minlength="6" maxlength="10">
-                                        <div class="invalid-feedback">NIS harus berupa angka, 6-10 digit</div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="new-password" class="form-label">Password *</label>
-                                        <input type="password" class="form-control" id="new-password" required
-                                               minlength="6">
-                                        <div class="invalid-feedback">Password minimal 6 karakter</div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="student-name" class="form-label">Nama Siswa *</label>
-                                        <input type="text" class="form-control" id="student-name" required
-                                               minlength="3" maxlength="50">
-                                        <div class="invalid-feedback">Nama harus 3-50 karakter</div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="student-class" class="form-label">Kelas *</label>
-                                        <select class="form-select" id="student-class" required>
-                                            <option value="">Pilih Kelas</option>
-                                            <optgroup label="Kelas 7">
-                                                <option value="7A">7A</option>
-                                                <option value="7B">7B</option>
-                                                <option value="7C">7C</option>
-                                                <option value="7D">7D</option>
-                                            </optgroup>
-                                            <optgroup label="Kelas 8">
-                                                <option value="8A">8A</option>
-                                                <option value="8B">8B</option>
-                                                <option value="8C">8C</option>
-                                                <option value="8D">8D</option>
-                                            </optgroup>
-                                            <optgroup label="Kelas 9">
-                                                <option value="9A">9A</option>
-                                                <option value="9B">9B</option>
-                                                <option value="9C">9C</option>
-                                                <option value="9D">9D</option>
-                                            </optgroup>
-                                            <optgroup label="Kelas 10">
-                                                <option value="10A">10A</option>
-                                                <option value="10B">10B</option>
-                                                <option value="10C">10C</option>
-                                                <option value="10D">10D</option>
-                                            </optgroup>
-                                            <optgroup label="Kelas 11">
-                                                <option value="11A">11A</option>
-                                                <option value="11B">11B</option>
-                                                <option value="11C">11C</option>
-                                                <option value="11D">11D</option>
-                                            </optgroup>
-                                            <optgroup label="Kelas 12">
-                                                <option value="12A">12A</option>
-                                                <option value="12B">12B</option>
-                                                <option value="12C">12C</option>
-                                                <option value="12D">12D</option>
-                                            </optgroup>
-                                        </select>
-                                        <div class="invalid-feedback">Silakan pilih kelas</div>
-                                    </div>
-                                </div>
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">
-                                        <span id="user-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
-                                        Tambah Siswa ke Database
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h6>Daftar Siswa</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <button class="btn btn-sm btn-outline-primary" id="refresh-users-btn">
-                                <i class="bi bi-arrow-clockwise"></i> Refresh Data
-                            </button>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>NIS</th>
-                                        <th>Nama</th>
-                                        <th>Kelas</th>
-                                        <th>Password</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table">
-                                    <!-- Data siswa akan diisi via JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap & JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ============================================
-        // KONFIGURASI DATABASE EXTERNAL (GOOGLE SHEETS)
-        // ============================================
+        // Ganti URL ini dengan URL Web App Google Apps Script Anda
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwvCzIrftPqoe19zvtJp6jvlh5qk7FFX9Hrtx_EfLgVCfNOrq9xhfU-EzvJt00xxxy7qA/exec';
         
-        // API URL untuk Google Apps Script (ganti dengan URL Anda)
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgaQU7yyk9PpdPAnWA3O6PkSs6Gtc7JjkeBDSnTXdUreaYFEBnY1GQ_FCqwgnpPsSqPg/exec';
-        
-        // API Key untuk autentikasi (ganti dengan API key Anda)
-        const API_KEY = 'SLADOR_EXAM_2024';
-        
-        // Cache untuk data
-        let subjects = [];
-        let users = [];
-        let currentUser = null;
-        let editingSubjectId = null;
-        let isOnline = navigator.onLine;
-
-        // Daftar kelas yang tersedia
-        const availableClasses = [
-            '7A', '7B', '7C', '7D',
-            '8A', '8B', '8C', '8D', 
-            '9A', '9B', '9C', '9D',
-            '10A', '10B', '10C', '10D',
-            '11A', '11B', '11C', '11D',
-            '12A', '12B', '12C', '12D',
-            'Semua Kelas'
-        ];
-
-        // ============================================
-        // FUNGSI UTILITAS
-        // ============================================
-
-        // Fungsi untuk menampilkan toast notification
-        function showToast(message, type = 'info') {
-            const toastContainer = document.querySelector('.toast-container');
-            const toastId = 'toast-' + Date.now();
-            
-            const toastHtml = `
-                <div id="${toastId}" class="toast align-items-center text-bg-${type} border-0" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ${message}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            `;
-            
-            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-            
-            const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement, {
-                autohide: true,
-                delay: 5000
+        // Fungsi untuk beralih antara tab login dan register
+        function switchTab(tabName) {
+            // Update tab aktif
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
             });
             
-            toast.show();
-            
-            // Remove toast from DOM after it's hidden
-            toastElement.addEventListener('hidden.bs.toast', function () {
-                this.remove();
-            });
-        }
-
-        // Fungsi untuk validasi form
-        function validateForm(form) {
-            let isValid = true;
-            const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
-            
-            inputs.forEach(input => {
-                input.classList.remove('is-invalid');
-                
-                if (!input.checkValidity()) {
-                    input.classList.add('is-invalid');
-                    isValid = false;
-                }
-            });
-            
-            return isValid;
-        }
-
-        // Fungsi untuk toggle spinner
-        function toggleSpinner(buttonId, show) {
-            const button = document.getElementById(buttonId);
-            if (button) {
-                const spinner = button.querySelector('.spinner-border');
-                if (spinner) {
-                    spinner.classList.toggle('d-none', !show);
-                }
-                button.disabled = show;
+            if (tabName === 'login') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('login-form').classList.add('active');
+                document.getElementById('register-form').classList.remove('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('register-form').classList.add('active');
+                document.getElementById('login-form').classList.remove('active');
             }
+            
+            // Reset pesan
+            document.getElementById('login-message').style.display = 'none';
+            document.getElementById('register-message').style.display = 'none';
         }
-
-        // ============================================
-        // FUNGSI DATABASE EXTERNAL
-        // ============================================
-
-        // Fungsi untuk fetch data dari Google Sheets
-        async function fetchDataFromSheets(type) {
+        
+        // Fungsi untuk login
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const messageDiv = document.getElementById('login-message');
+            
+            // Validasi input
+            if (!username || !password) {
+                showMessage(messageDiv, 'error', 'Username dan password harus diisi');
+                return;
+            }
+            
+            showMessage(messageDiv, 'success', 'Sedang memproses login...');
+            
             try {
-                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get&type=${type}&key=${API_KEY}`);
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                // Kirim request ke Google Apps Script
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        method: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    return data.data;
-                } else {
-                    throw new Error(data.message || 'Failed to fetch data');
-                }
-            } catch (error) {
-                console.error(`Error fetching ${type}:`, error);
-                showToast(`Gagal memuat data ${type}: ${error.message}`, 'danger');
-                return [];
-            }
-        }
-
-        // Fungsi untuk save data ke Google Sheets
-        async function saveDataToSheets(type, data) {
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'save',
-                        type: type,
-                        key: API_KEY,
-                        data: data
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    return true;
-                } else {
-                    throw new Error(result.message || 'Failed to save data');
-                }
-            } catch (error) {
-                console.error(`Error saving ${type}:`, error);
-                showToast(`Gagal menyimpan data ${type}: ${error.message}`, 'danger');
-                return false;
-            }
-        }
-
-        // Fungsi untuk update data di Google Sheets
-        async function updateDataInSheets(type, id, updatedData) {
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'update',
-                        type: type,
-                        key: API_KEY,
-                        id: id,
-                        data: updatedData
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    return true;
-                } else {
-                    throw new Error(result.message || 'Failed to update data');
-                }
-            } catch (error) {
-                console.error(`Error updating ${type}:`, error);
-                showToast(`Gagal mengupdate data ${type}: ${error.message}`, 'danger');
-                return false;
-            }
-        }
-
-        // Fungsi untuk delete data dari Google Sheets
-        async function deleteDataFromSheets(type, id) {
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'delete',
-                        type: type,
-                        key: API_KEY,
-                        id: id
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    return true;
-                } else {
-                    throw new Error(result.message || 'Failed to delete data');
-                }
-            } catch (error) {
-                console.error(`Error deleting ${type}:`, error);
-                showToast(`Gagal menghapus data ${type}: ${error.message}`, 'danger');
-                return false;
-            }
-        }
-
-        // Fungsi untuk sync data
-        async function syncData() {
-            try {
-                showToast('Menyinkronkan data dengan server...', 'info');
-                
-                // Load subjects from server
-                const serverSubjects = await fetchDataFromSheets('subjects');
-                if (serverSubjects.length > 0) {
-                    subjects = serverSubjects;
-                    saveToLocalStorage('slador_subjects', subjects);
-                }
-                
-                // Load users from server
-                const serverUsers = await fetchDataFromSheets('users');
-                if (serverUsers.length > 0) {
-                    users = serverUsers;
-                    saveToLocalStorage('slador_users', users);
-                }
-                
-                updateSubjectsTable();
-                updateUsersTable();
-                updateCounts();
-                
-                showToast('Data berhasil disinkronkan!', 'success');
-            } catch (error) {
-                console.error('Error syncing data:', error);
-                showToast('Gagal menyinkronkan data', 'danger');
-            }
-        }
-
-        // ============================================
-        // FUNGSI LOCALSTORAGE (FALLBACK)
-        // ============================================
-
-        // Fungsi untuk menyimpan data ke localStorage
-        function saveToLocalStorage(key, data) {
-            try {
-                localStorage.setItem(key, JSON.stringify(data));
-                return true;
-            } catch (e) {
-                console.error('Error saving to localStorage:', e);
-                return false;
-            }
-        }
-
-        // Fungsi untuk memuat data dari localStorage
-        function loadFromLocalStorage(key, defaultValue = []) {
-            try {
-                const data = localStorage.getItem(key);
-                return data ? JSON.parse(data) : defaultValue;
-            } catch (e) {
-                console.error('Error loading from localStorage:', e);
-                return defaultValue;
-            }
-        }
-
-        // ============================================
-        // INISIALISASI APLIKASI
-        // ============================================
-
-        // Inisialisasi halaman
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Cek koneksi internet
-            window.addEventListener('online', () => {
-                isOnline = true;
-                showToast('Koneksi internet tersedia', 'success');
-            });
-            
-            window.addEventListener('offline', () => {
-                isOnline = false;
-                showToast('Tidak ada koneksi internet, menggunakan data lokal', 'warning');
-            });
-
-            // Event listener untuk login forms
-            document.getElementById('user-login-form').addEventListener('submit', handleUserLogin);
-            document.getElementById('admin-login-form').addEventListener('submit', handleAdminLogin);
-            
-            // Event listener untuk admin functions
-            document.getElementById('subject-form').addEventListener('submit', handleSubjectForm);
-            document.getElementById('user-form').addEventListener('submit', handleUserForm);
-            document.getElementById('process-excel').addEventListener('click', processExcelData);
-            document.getElementById('sync-data-btn').addEventListener('click', syncData);
-            document.getElementById('refresh-users-btn').addEventListener('click', async () => {
-                await loadUsers();
-                updateUsersTable();
-            });
-            
-            // Event listener untuk logout
-            document.getElementById('admin-nav-logout').addEventListener('click', handleLogout);
-            document.getElementById('user-nav-logout').addEventListener('click', handleLogout);
-            
-            // Real-time validation for forms
-            setupFormValidation();
-            
-            // Load initial data
-            await loadInitialData();
-            
-            updateCounts();
-        });
-
-        // Setup form validation
-        function setupFormValidation() {
-            // User login form validation
-            const userLoginForm = document.getElementById('user-login-form');
-            userLoginForm.addEventListener('input', function(e) {
-                if (e.target.matches('input')) {
-                    validateField(e.target);
-                }
-            });
-
-            // Subject form validation
-            const subjectForm = document.getElementById('subject-form');
-            subjectForm.addEventListener('input', function(e) {
-                if (e.target.matches('input, select')) {
-                    validateField(e.target);
-                }
-            });
-
-            // User form validation
-            const userForm = document.getElementById('user-form');
-            userForm.addEventListener('input', function(e) {
-                if (e.target.matches('input, select')) {
-                    validateField(e.target);
-                }
-            });
-        }
-
-        // Validate individual field
-        function validateField(field) {
-            field.classList.remove('is-invalid');
-            
-            if (!field.checkValidity()) {
-                field.classList.add('is-invalid');
-                return false;
-            }
-            
-            return true;
-        }
-
-        // Load initial data
-        async function loadInitialData() {
-            try {
-                if (isOnline) {
-                    // Try to load from server first
-                    subjects = await fetchDataFromSheets('subjects');
-                    users = await fetchDataFromSheets('users');
+                    showMessage(messageDiv, 'success', 'Login berhasil!');
                     
-                    if (subjects.length === 0) {
-                        subjects = loadFromLocalStorage('slador_subjects', getDefaultSubjects());
-                    }
-                    if (users.length === 0) {
-                        users = loadFromLocalStorage('slador_users', getDefaultUsers());
-                    }
+                    // Simpan data user di localStorage (bisa juga menggunakan session)
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Tampilkan dashboard setelah 1 detik
+                    setTimeout(() => {
+                        showDashboard(data.user);
+                    }, 1000);
                 } else {
-                    // Use local data
-                    subjects = loadFromLocalStorage('slador_subjects', getDefaultSubjects());
-                    users = loadFromLocalStorage('slador_users', getDefaultUsers());
-                    showToast('Menggunakan data lokal (offline mode)', 'info');
-                }
-                
-                // Save to localStorage as backup
-                saveToLocalStorage('slador_subjects', subjects);
-                saveToLocalStorage('slador_users', users);
-                
-            } catch (error) {
-                console.error('Error loading initial data:', error);
-                subjects = loadFromLocalStorage('slador_subjects', getDefaultSubjects());
-                users = loadFromLocalStorage('slador_users', getDefaultUsers());
-                showToast('Menggunakan data lokal', 'info');
-            }
-        }
-
-        // Load users from server
-        async function loadUsers() {
-            try {
-                const serverUsers = await fetchDataFromSheets('users');
-                if (serverUsers.length > 0) {
-                    users = serverUsers;
-                    saveToLocalStorage('slador_users', users);
-                    showToast('Data siswa diperbarui dari server', 'success');
+                    showMessage(messageDiv, 'error', data.error || 'Login gagal');
                 }
             } catch (error) {
-                console.error('Error loading users:', error);
-            }
-        }
-
-        // Default data
-        function getDefaultSubjects() {
-            return [
-                { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "7A" },
-                { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "7A" },
-                { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "8B" },
-                { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "9C" },
-                { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10D" },
-                { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11A" },
-                { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11B" },
-                { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "12C" },
-                { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "12D" },
-                { id: 10, name: "Ujian Umum", link: "https://forms.google.com/general-exam", date: "2023-12-10", status: "active", class: "Semua Kelas" }
-            ];
-        }
-
-        function getDefaultUsers() {
-            return [
-                { id: 1, nis: "230701", password: "password123", name: "Andi Pratama", class: "7A" },
-                { id: 2, nis: "230702", password: "password123", name: "Budi Santoso", class: "7B" },
-                { id: 3, nis: "230703", password: "password123", name: "Citra Lestari", class: "7C" },
-                { id: 4, nis: "230704", password: "password123", name: "Dewi Anggraini", class: "7D" },
-                { id: 5, nis: "220801", password: "password123", name: "Eko Prasetyo", class: "8A" },
-                { id: 6, nis: "220802", password: "password123", name: "Fajar Nugroho", class: "8B" },
-                { id: 7, nis: "220803", password: "password123", name: "Gita Wulandari", class: "8C" },
-                { id: 8, nis: "220804", password: "password123", name: "Hendra Setiawan", class: "8D" },
-                { id: 9, nis: "210901", password: "password123", name: "Indah Permata", class: "9A" },
-                { id: 10, nis: "210902", password: "password123", name: "Joko Widodo", class: "9B" }
-            ];
-        }
-
-        // ============================================
-        // FUNGSI UTAMA APLIKASI
-        // ============================================
-
-        // Fungsi untuk login user dengan NIS
-        async function handleUserLogin(e) {
-            e.preventDefault();
-            
-            if (!validateForm(e.target)) {
-                showToast('Harap periksa kembali data yang Anda masukkan', 'warning');
-                return;
-            }
-            
-            const nis = document.getElementById('user-nis').value;
-            const password = document.getElementById('user-password').value;
-            
-            // Show spinner
-            toggleSpinner('login-spinner', true);
-            
-            try {
-                // Reset form
-                e.target.reset();
-                
-                // Check in local data first
-                let user = users.find(u => u.nis === nis && u.password === password);
-                
-                if (!user && isOnline) {
-                    // If not found locally and online, try to sync and check again
-                    await loadUsers();
-                    user = users.find(u => u.nis === nis && u.password === password);
-                }
-                
-                if (user) {
-                    currentUser = user;
-                    showUserDashboard();
-                    showToast(`Selamat datang, ${user.name}!`, 'success');
-                } else {
-                    showToast('NIS atau password salah!', 'danger');
-                }
-            } catch (error) {
+                showMessage(messageDiv, 'error', 'Terjadi kesalahan: ' + error.message);
                 console.error('Login error:', error);
-                showToast('Terjadi kesalahan saat login', 'danger');
-            } finally {
-                toggleSpinner('login-spinner', false);
             }
         }
-
-        // Fungsi untuk login admin
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('admin-username').value;
-            const password = document.getElementById('admin-password').value;
+        
+        // Fungsi untuk registrasi
+        async function register() {
+            const fullName = document.getElementById('register-fullname').value;
+            const email = document.getElementById('register-email').value;
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const messageDiv = document.getElementById('register-message');
             
-            // Reset form dan tutup modal
-            e.target.reset();
-            const modal = bootstrap.Modal.getInstance(document.getElementById('adminLoginModal'));
-            modal.hide();
-            
-            // Validasi admin
-            if (username === 'admin' && password === 'admin123') {
-                currentUser = { username: 'admin', role: 'admin' };
-                showAdminDashboard();
-                showToast('Login admin berhasil!', 'success');
-            } else {
-                showToast('Username atau password admin salah!', 'danger');
-            }
-        }
-
-        // Fungsi untuk menampilkan dashboard admin
-        function showAdminDashboard() {
-            document.getElementById('initial-login-page').classList.add('d-none');
-            document.getElementById('admin-dashboard').classList.remove('d-none');
-            updateSubjectsTable();
-            updateUsersTable();
-            updateCounts();
-        }
-
-        // Fungsi untuk menampilkan dashboard user
-        function showUserDashboard() {
-            document.getElementById('initial-login-page').classList.add('d-none');
-            document.getElementById('user-dashboard').classList.remove('d-none');
-            
-            // Tampilkan informasi user
-            document.getElementById('user-display-name').textContent = currentUser.name;
-            document.getElementById('user-class-badge').textContent = currentUser.class;
-            document.getElementById('current-user-class').textContent = currentUser.class;
-            document.getElementById('filter-class-display').textContent = currentUser.class;
-            
-            updateUserExams();
-        }
-
-        // Fungsi untuk logout
-        function handleLogout() {
-            document.getElementById('admin-dashboard').classList.add('d-none');
-            document.getElementById('user-dashboard').classList.add('d-none');
-            document.getElementById('initial-login-page').classList.remove('d-none');
-            currentUser = null;
-            showToast('Anda telah logout', 'info');
-        }
-
-        // Fungsi untuk update counts di dashboard admin
-        function updateCounts() {
-            document.getElementById('subject-count').textContent = subjects.length;
-            document.getElementById('user-count').textContent = users.length;
-            
-            // Hitung kelas unik
-            const uniqueClasses = [...new Set(users.map(user => user.class))];
-            document.getElementById('class-count').textContent = uniqueClasses.length;
-            
-            // Hitung ujian aktif
-            const activeExams = subjects.filter(subject => subject.status === 'active').length;
-            document.getElementById('active-exam-count').textContent = activeExams;
-        }
-
-        // Fungsi untuk update tabel mata pelajaran
-        function updateSubjectsTable() {
-            const tbody = document.getElementById('subjects-table');
-            tbody.innerHTML = '';
-            
-            if (subjects.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            <i class="bi bi-inbox display-4 d-block mb-2"></i>
-                            Belum ada mata pelajaran
-                        </td>
-                    </tr>
-                `;
+            // Validasi input
+            if (!fullName || !email || !username || !password) {
+                showMessage(messageDiv, 'error', 'Semua field harus diisi');
                 return;
             }
             
-            subjects.forEach(subject => {
-                const row = document.createElement('tr');
-                const statusBadge = subject.status === 'active' ? 
-                    '<span class="badge bg-success status-badge">Aktif</span>' : 
-                    '<span class="badge bg-secondary status-badge">Nonaktif</span>';
-                
-                row.innerHTML = `
-                    <td>${subject.name}</td>
-                    <td>
-                        <span class="badge bg-primary">${subject.class}</span>
-                    </td>
-                    <td>${new Date(subject.date).toLocaleDateString('id-ID')}</td>
-                    <td><a href="${subject.link}" target="_blank">Link Ujian</a></td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-sm btn-outline-primary edit-subject" data-id="${subject.id}">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger delete-subject" data-id="${subject.id}">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            // Add event listeners untuk edit dan delete
-            document.querySelectorAll('.edit-subject').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = parseInt(this.getAttribute('data-id'));
-                    editSubject(id);
-                });
-            });
-
-            document.querySelectorAll('.delete-subject').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = parseInt(this.getAttribute('data-id'));
-                    deleteSubject(id);
-                });
-            });
-        }
-
-        // Fungsi untuk edit mata pelajaran
-        function editSubject(id) {
-            const subject = subjects.find(s => s.id === id);
-            if (subject) {
-                document.getElementById('subject-id').value = subject.id;
-                document.getElementById('subject-name').value = subject.name;
-                document.getElementById('exam-link').value = subject.link;
-                document.getElementById('exam-date').value = subject.date;
-                document.getElementById('subject-status').value = subject.status;
-                document.getElementById('subject-class').value = subject.class;
-                document.getElementById('subject-modal-title').textContent = 'Edit Mata Pelajaran';
-                document.getElementById('subject-submit-btn').textContent = 'Update Mata Pelajaran';
-                
-                editingSubjectId = id;
-                
-                const modal = new bootstrap.Modal(document.getElementById('subjectModal'));
-                modal.show();
-            }
-        }
-
-        // Fungsi untuk hapus mata pelajaran
-        async function deleteSubject(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus mata pelajaran ini?')) {
-                try {
-                    // Try to delete from server if online
-                    if (isOnline) {
-                        const success = await deleteDataFromSheets('subjects', id);
-                        if (!success) {
-                            showToast('Gagal menghapus dari server, hanya dihapus dari data lokal', 'warning');
-                        }
-                    }
-                    
-                    // Delete from local data
-                    subjects = subjects.filter(s => s.id !== id);
-                    saveToLocalStorage('slador_subjects', subjects);
-                    updateSubjectsTable();
-                    updateCounts();
-                    showToast('Mata pelajaran berhasil dihapus!', 'success');
-                } catch (error) {
-                    console.error('Error deleting subject:', error);
-                    showToast('Gagal menghapus mata pelajaran', 'danger');
-                }
-            }
-        }
-
-        // Fungsi untuk update daftar ujian user
-        function updateUserExams() {
-            const container = document.getElementById('user-exams');
-            container.innerHTML = '';
-            
-            // Filter soal berdasarkan kelas user
-            const userClass = currentUser.class;
-            const filteredSubjects = subjects.filter(subject => 
-                subject.class === userClass || subject.class === "Semua Kelas"
-            );
-            
-            if (filteredSubjects.length === 0) {
-                container.innerHTML = `
-                    <div class="col-12">
-                        <div class="alert alert-warning text-center">
-                            <h5><i class="bi bi-exclamation-triangle"></i> Tidak ada ujian untuk kelas ${userClass}</h5>
-                            <p>Silakan hubungi administrator untuk informasi lebih lanjut.</p>
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Tampilkan soal yang sesuai dengan kelas user
-            filteredSubjects.forEach(subject => {
-                const col = document.createElement('div');
-                col.className = 'col-md-4 mb-4';
-                
-                const isActive = subject.status === 'active';
-                const cardClass = isActive ? 'exam-card' : 'exam-card inactive';
-                const statusBadge = isActive ? 
-                    '<span class="exam-status badge bg-success">AKTIF</span>' : 
-                    '<span class="exam-status badge bg-secondary">TIDAK AKTIF</span>';
-                
-                const classBadge = `<span class="class-badge">${subject.class}</span>`;
-                
-                const buttonHtml = isActive ? 
-                    `<a href="${subject.link}" target="_blank" class="btn btn-primary w-100">
-                        <i class="bi bi-box-arrow-in-right"></i> Ikuti Ujian
-                    </a>` :
-                    `<button class="btn btn-secondary w-100 btn-disabled" disabled>
-                        <i class="bi bi-lock"></i> Ujian Tidak Aktif
-                    </button>`;
-                
-                col.innerHTML = `
-                    <div class="card ${cardClass} h-100">
-                        <div class="card-body position-relative">
-                            ${classBadge}
-                            ${statusBadge}
-                            <h5 class="card-title">${subject.name}</h5>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar-event"></i> 
-                                    ${new Date(subject.date).toLocaleDateString('id-ID')}
-                                </small>
-                            </p>
-                            <p class="card-text">
-                                ${isActive ? 
-                                    'Ujian tersedia. Klik tombol di bawah untuk mengikuti ujian.' : 
-                                    'Ujian saat ini tidak aktif. Silakan hubungi administrator.'}
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            ${buttonHtml}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(col);
-            });
-        }
-
-        // Fungsi untuk update tabel users
-        function updateUsersTable() {
-            const tbody = document.getElementById('users-table');
-            tbody.innerHTML = '';
-            
-            if (users.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
-                            <i class="bi bi-people display-4 d-block mb-2"></i>
-                            Belum ada data siswa
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            users.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.nis}</td>
-                    <td>${user.name}</td>
-                    <td>
-                        <span class="badge bg-primary">${user.class}</span>
-                    </td>
-                    <td>${user.password}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-danger delete-user" data-id="${user.id}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            // Add event listeners untuk delete user
-            document.querySelectorAll('.delete-user').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = parseInt(this.getAttribute('data-id'));
-                    deleteUser(id);
-                });
-            });
-        }
-
-        // Fungsi untuk hapus user
-        async function deleteUser(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
-                try {
-                    // Try to delete from server if online
-                    if (isOnline) {
-                        const success = await deleteDataFromSheets('users', id);
-                        if (!success) {
-                            showToast('Gagal menghapus dari server, hanya dihapus dari data lokal', 'warning');
-                        }
-                    }
-                    
-                    // Delete from local data
-                    users = users.filter(u => u.id !== id);
-                    saveToLocalStorage('slador_users', users);
-                    updateUsersTable();
-                    updateCounts();
-                    showToast('Siswa berhasil dihapus!', 'success');
-                } catch (error) {
-                    console.error('Error deleting user:', error);
-                    showToast('Gagal menghapus siswa', 'danger');
-                }
-            }
-        }
-
-        // Fungsi untuk handle form mata pelajaran
-        async function handleSubjectForm(e) {
-            e.preventDefault();
-            
-            if (!validateForm(e.target)) {
-                showToast('Harap periksa kembali data yang Anda masukkan', 'warning');
-                return;
-            }
-            
-            const id = document.getElementById('subject-id').value;
-            const name = document.getElementById('subject-name').value;
-            const link = document.getElementById('exam-link').value;
-            const date = document.getElementById('exam-date').value;
-            const status = document.getElementById('subject-status').value;
-            const subjectClass = document.getElementById('subject-class').value;
-            
-            toggleSpinner('subject-spinner', true);
+            showMessage(messageDiv, 'success', 'Sedang mendaftarkan akun...');
             
             try {
-                if (editingSubjectId) {
-                    // Edit existing subject
-                    const subjectIndex = subjects.findIndex(s => s.id === editingSubjectId);
-                    if (subjectIndex !== -1) {
-                        const updatedSubject = { 
-                            id: editingSubjectId, 
-                            name, 
-                            link, 
-                            date, 
-                            status, 
-                            class: subjectClass 
-                        };
-                        
-                        // Update in server if online
-                        if (isOnline) {
-                            const success = await updateDataInSheets('subjects', editingSubjectId, updatedSubject);
-                            if (!success) {
-                                showToast('Gagal update di server, hanya diupdate di data lokal', 'warning');
-                            }
-                        }
-                        
-                        subjects[subjectIndex] = updatedSubject;
-                        showToast('Mata pelajaran berhasil diperbarui!', 'success');
-                    }
-                    editingSubjectId = null;
+                // Kirim request ke Google Apps Script
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        method: 'register',
+                        fullName: fullName,
+                        email: email,
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(messageDiv, 'success', 'Pendaftaran berhasil! Silakan login.');
+                    
+                    // Kosongkan form
+                    document.getElementById('register-fullname').value = '';
+                    document.getElementById('register-email').value = '';
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';
+                    
+                    // Beralih ke tab login setelah 2 detik
+                    setTimeout(() => {
+                        switchTab('login');
+                    }, 2000);
                 } else {
-                    // Add new subject
-                    const newId = subjects.length > 0 ? Math.max(...subjects.map(s => s.id)) + 1 : 1;
-                    const newSubject = {
-                        id: newId,
-                        name,
-                        link,
-                        date,
-                        status,
-                        class: subjectClass
-                    };
-                    
-                    // Save to server if online
-                    if (isOnline) {
-                        const success = await saveDataToSheets('subjects', newSubject);
-                        if (!success) {
-                            showToast('Gagal menyimpan ke server, hanya disimpan di data lokal', 'warning');
-                        }
-                    }
-                    
-                    subjects.push(newSubject);
-                    showToast('Mata pelajaran berhasil ditambahkan!', 'success');
+                    showMessage(messageDiv, 'error', data.error || 'Pendaftaran gagal');
                 }
-                
-                // Save to localStorage
-                saveToLocalStorage('slador_subjects', subjects);
-                
-                // Reset form dan update UI
-                e.target.reset();
-                document.getElementById('subject-modal-title').textContent = 'Tambah Mata Pelajaran';
-                document.getElementById('subject-submit-btn').textContent = 'Simpan Mata Pelajaran';
-                
-                const modal = bootstrap.Modal.getInstance(document.getElementById('subjectModal'));
-                modal.hide();
-                
-                updateSubjectsTable();
-                updateCounts();
             } catch (error) {
-                console.error('Error saving subject:', error);
-                showToast('Terjadi kesalahan saat menyimpan data', 'danger');
-            } finally {
-                toggleSpinner('subject-spinner', false);
+                showMessage(messageDiv, 'error', 'Terjadi kesalahan: ' + error.message);
+                console.error('Register error:', error);
             }
         }
-
-        // Fungsi untuk handle form user manual
-        async function handleUserForm(e) {
-            e.preventDefault();
+        
+        // Fungsi untuk menampilkan dashboard
+        function showDashboard(user) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
             
-            if (!validateForm(e.target)) {
-                showToast('Harap periksa kembali data yang Anda masukkan', 'warning');
-                return;
-            }
+            // Isi data user
+            document.getElementById('dashboard-username').textContent = user.username;
+            document.getElementById('dashboard-email').textContent = user.email;
+            document.getElementById('dashboard-fullname').textContent = user.fullName;
+        }
+        
+        // Fungsi untuk logout
+        function logout() {
+            localStorage.removeItem('user');
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('auth-section').style.display = 'block';
             
-            const nis = document.getElementById('new-nis').value;
-            const password = document.getElementById('new-password').value;
-            const name = document.getElementById('student-name').value;
-            const studentClass = document.getElementById('student-class').value;
+            // Reset form
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-message').style.display = 'none';
             
-            // Cek duplikasi NIS
-            if (users.find(u => u.nis === nis)) {
-                showToast('NIS sudah digunakan!', 'danger');
-                return;
-            }
+            switchTab('login');
+        }
+        
+        // Fungsi untuk menampilkan pesan
+        function showMessage(element, type, message) {
+            element.textContent = message;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
             
-            // Validasi kelas
-            if (!availableClasses.includes(studentClass) && studentClass !== 'Semua Kelas') {
-                showToast('Kelas yang dipilih tidak valid!', 'danger');
-                return;
-            }
-            
-            toggleSpinner('user-spinner', true);
-            
-            try {
-                const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
-                const newUser = {
-                    id: newId,
-                    nis,
-                    password,
-                    name,
-                    class: studentClass
-                };
-                
-                // Save to server if online
-                if (isOnline) {
-                    const success = await saveDataToSheets('users', newUser);
-                    if (!success) {
-                        showToast('Gagal menyimpan ke server, hanya disimpan di data lokal', 'warning');
-                    }
-                }
-                
-                users.push(newUser);
-                
-                // Save to localStorage
-                saveToLocalStorage('slador_users', users);
-                
-                // Reset form dan update UI
-                e.target.reset();
-                updateUsersTable();
-                updateCounts();
-                
-                showToast('Siswa berhasil ditambahkan!', 'success');
-            } catch (error) {
-                console.error('Error saving user:', error);
-                showToast('Terjadi kesalahan saat menyimpan data', 'danger');
-            } finally {
-                toggleSpinner('user-spinner', false);
+            // Sembunyikan pesan setelah 5 detik untuk error
+            if (type === 'error') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
             }
         }
-
-        // Fungsi untuk proses data Excel
-        async function processExcelData() {
-            const data = document.getElementById('excel-data').value.trim();
-            if (!data) {
-                showToast('Silakan tempel data dari Excel terlebih dahulu!', 'warning');
-                return;
-            }
-            
-            toggleSpinner('excel-spinner', true);
-            
-            const lines = data.split('\n');
-            let successCount = 0;
-            let errorCount = 0;
-            let errors = [];
-            
-            try {
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i];
-                    if (line.trim()) {
-                        const columns = line.split('\t').map(col => col.trim());
-                        if (columns.length >= 4) {
-                            const [nis, password, name, studentClass] = columns;
-                            
-                            // Validasi NIS (harus angka)
-                            if (!/^\d+$/.test(nis)) {
-                                errors.push(`Baris ${i + 1}: NIS harus berupa angka`);
-                                errorCount++;
-                                continue;
-                            }
-                            
-                            // Validasi password (minimal 6 karakter)
-                            if (password.length < 6) {
-                                errors.push(`Baris ${i + 1}: Password minimal 6 karakter`);
-                                errorCount++;
-                                continue;
-                            }
-                            
-                            // Validasi nama (minimal 3 karakter)
-                            if (name.length < 3) {
-                                errors.push(`Baris ${i + 1}: Nama minimal 3 karakter`);
-                                errorCount++;
-                                continue;
-                            }
-                            
-                            // Validasi kelas
-                            if (!availableClasses.includes(studentClass) && studentClass !== 'Semua Kelas') {
-                                errors.push(`Baris ${i + 1}: Kelas "${studentClass}" tidak valid`);
-                                errorCount++;
-                                continue;
-                            }
-                            
-                            if (!users.find(u => u.nis === nis)) {
-                                const newId = users.length + 1;
-                                const newUser = {
-                                    id: newId,
-                                    nis,
-                                    password,
-                                    name,
-                                    class: studentClass
-                                };
-                                
-                                // Save to server if online
-                                if (isOnline) {
-                                    const success = await saveDataToSheets('users', newUser);
-                                    if (!success) {
-                                        errors.push(`Baris ${i + 1}: Gagal menyimpan ke server`);
-                                        errorCount++;
-                                        continue;
-                                    }
-                                }
-                                
-                                users.push(newUser);
-                                successCount++;
-                            } else {
-                                errors.push(`Baris ${i + 1}: NIS ${nis} sudah digunakan`);
-                                errorCount++;
-                            }
-                        } else {
-                            errors.push(`Baris ${i + 1}: Format data tidak sesuai (harus 4 kolom)`);
-                            errorCount++;
-                        }
-                    }
-                }
-                
-                // Save to localStorage
-                saveToLocalStorage('slador_users', users);
-                
-                // Update UI
-                updateUsersTable();
-                updateCounts();
-                document.getElementById('excel-data').value = '';
-                
-                let message = `Berhasil mengimpor ${successCount} siswa!`;
-                if (errorCount > 0) {
-                    message += ` ${errorCount} data gagal.`;
-                    if (errors.length > 0) {
-                        errors.forEach(error => {
-                            showToast(error, 'warning');
-                        });
-                    }
-                }
-                
-                showToast(message, successCount > 0 ? 'success' : 'warning');
-            } catch (error) {
-                console.error('Error processing Excel:', error);
-                showToast('Terjadi kesalahan saat memproses data', 'danger');
-            } finally {
-                toggleSpinner('excel-spinner', false);
+        
+        // Cek apakah user sudah login
+        function checkLoginStatus() {
+            const user = localStorage.getItem('user');
+            if (user) {
+                showDashboard(JSON.parse(user));
             }
         }
+        
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            
+            // Tambahkan event listener untuk enter key
+            document.getElementById('login-password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            
+            document.getElementById('register-password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    register();
+                }
+            });
+        });
     </script>
 </body>
 </html>
