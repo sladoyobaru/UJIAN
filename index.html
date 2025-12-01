@@ -189,6 +189,22 @@
             pointer-events: none;
             opacity: 0.5;
         }
+        
+        .class-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 15px;
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .user-class-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -199,7 +215,7 @@
                 <div class="row justify-content-center">
                     <div class="col-md-8 text-center mb-5">
                         <h1 class="display-4 fw-bold">SLADOR EXAM</h1>
-                        <p class="lead">Sistem Ujian Online SMP ADVENT DOYO BARU</p>
+                        <p class="lead">Sistem Ujian Online Terpadu</p>
                     </div>
                 </div>
                 <div class="row justify-content-center">
@@ -213,7 +229,7 @@
                                 </div>
                                 <form id="user-login-form">
                                     <div class="mb-3">
-                                        <label for="user-username" class="form-label">Nomor Induk Siswa (NIS)</label>
+                                        <label for="user-username" class="form-label">Username</label>
                                         <input type="text" class="form-control" id="user-username" required>
                                     </div>
                                     <div class="mb-3">
@@ -221,7 +237,7 @@
                                         <input type="password" class="form-control" id="user-password" required>
                                     </div>
                                     <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                                        <button type="submit" class="btn btn-primary btn-lg">Masuk sebagai Siswa</button>
                                     </div>
                                 </form>
                             </div>
@@ -256,7 +272,7 @@
                             <input type="password" class="form-control" id="admin-password" required>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-success">Login Admin</button>
+                            <button type="submit" class="btn btn-success">Masuk sebagai Admin</button>
                         </div>
                     </form>
                 </div>
@@ -376,6 +392,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nama Mata Pelajaran</th>
+                                        <th>Kelas</th>
                                         <th>Tanggal Ujian</th>
                                         <th>Link Ujian</th>
                                         <th>Status</th>
@@ -409,6 +426,7 @@
                             <span class="nav-link">
                                 <i class="bi bi-person-circle"></i> 
                                 <span id="user-display-name"></span>
+                                <span class="badge bg-light text-dark ms-1" id="user-class-badge"></span>
                             </span>
                         </li>
                         <li class="nav-item">
@@ -425,14 +443,27 @@
             <!-- Alert Area -->
             <div id="user-alert-area"></div>
 
-            <div class="row">
+            <!-- Info Kelas User -->
+            <div class="row mb-4">
                 <div class="col-12">
-                    <div class="alert alert-info">
-                        <h4 class="alert-heading">Daftar Ujian Tersedia</h4>
-                        <p class="mb-0">
-                            <i class="bi bi-info-circle"></i> 
-                            Semua mata pelajaran ditampilkan. Hanya ujian dengan status <span class="badge bg-success">AKTIF</span> yang dapat diikuti.
-                        </p>
+                    <div class="card user-class-info">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="card-title mb-1">
+                                        <i class="bi bi-house-door-fill"></i>
+                                        Ujian untuk Kelas <span id="current-user-class" class="fw-bold"></span>
+                                    </h5>
+                                    <p class="card-text mb-0">Berikut adalah daftar ujian yang tersedia untuk kelas Anda</p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <span class="badge bg-light text-dark fs-6">
+                                        <i class="bi bi-funnel"></i>
+                                        Filter: Kelas <span id="filter-class-display"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -460,20 +491,37 @@
                                 <input type="text" class="form-control" id="subject-name" required>
                             </div>
                             <div class="col-md-6 mb-3">
+                                <label for="subject-class" class="form-label">Kelas</label>
+                                <select class="form-select" id="subject-class" required>
+                                    <option value="">Pilih Kelas</option>
+                                    <option value="10 IPA 1">10 IPA 1</option>
+                                    <option value="10 IPA 2">10 IPA 2</option>
+                                    <option value="10 IPS 1">10 IPS 1</option>
+                                    <option value="10 IPS 2">10 IPS 2</option>
+                                    <option value="11 IPA 1">11 IPA 1</option>
+                                    <option value="11 IPA 2">11 IPA 2</option>
+                                    <option value="11 IPS 1">11 IPS 1</option>
+                                    <option value="11 IPS 2">11 IPS 2</option>
+                                    <option value="Semua Kelas">Semua Kelas</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
                                 <label for="exam-date" class="form-label">Tanggal Ujian</label>
                                 <input type="date" class="form-control" id="exam-date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="subject-status" class="form-label">Status</label>
+                                <select class="form-select" id="subject-status">
+                                    <option value="active">Aktif</option>
+                                    <option value="inactive">Tidak Aktif</option>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="exam-link" class="form-label">Link Ujian (Google Form)</label>
                             <input type="url" class="form-control" id="exam-link" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="subject-status" class="form-label">Status</label>
-                            <select class="form-select" id="subject-status">
-                                <option value="active">Aktif</option>
-                                <option value="inactive">Tidak Aktif</option>
-                            </select>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary" id="subject-submit-btn">Simpan Mata Pelajaran</button>
@@ -537,7 +585,17 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="student-class" class="form-label">Kelas</label>
-                                        <input type="text" class="form-control" id="student-class" required>
+                                        <select class="form-select" id="student-class" required>
+                                            <option value="">Pilih Kelas</option>
+                                            <option value="10 IPA 1">10 IPA 1</option>
+                                            <option value="10 IPA 2">10 IPA 2</option>
+                                            <option value="10 IPS 1">10 IPS 1</option>
+                                            <option value="10 IPS 2">10 IPS 2</option>
+                                            <option value="11 IPA 1">11 IPA 1</option>
+                                            <option value="11 IPA 2">11 IPA 2</option>
+                                            <option value="11 IPS 1">11 IPS 1</option>
+                                            <option value="11 IPS 2">11 IPS 2</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="d-grid">
@@ -574,19 +632,30 @@
     <!-- Bootstrap & JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Data contoh
+        // Data contoh dengan atribut kelas
         let subjects = [
-            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active" },
-            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive" },
-            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active" },
-            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "inactive" },
-            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active" }
+            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "10 IPA 1" },
+            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "10 IPA 1" },
+            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "10 IPA 2" },
+            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "10 IPS 1" },
+            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10 IPS 2" },
+            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11 IPA 1" },
+            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11 IPA 2" },
+            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "11 IPS 1" },
+            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "11 IPS 2" },
+            { id: 10, name: "Ujian Umum", link: "https://forms.google.com/general-exam", date: "2023-12-10", status: "active", class: "Semua Kelas" }
         ];
         
         let users = [
             { id: 1, username: "siswa1", password: "password123", name: "Andi Pratama", class: "10 IPA 1" },
             { id: 2, username: "siswa2", password: "password123", name: "Budi Santoso", class: "10 IPA 1" },
-            { id: 3, username: "siswa3", password: "password123", name: "Citra Lestari", class: "10 IPA 2" }
+            { id: 3, username: "siswa3", password: "password123", name: "Citra Lestari", class: "10 IPA 2" },
+            { id: 4, username: "siswa4", password: "password123", name: "Dewi Anggraini", class: "10 IPS 1" },
+            { id: 5, username: "siswa5", password: "password123", name: "Eko Prasetyo", class: "10 IPS 2" },
+            { id: 6, username: "siswa6", password: "password123", name: "Fajar Nugroho", class: "11 IPA 1" },
+            { id: 7, username: "siswa7", password: "password123", name: "Gita Wulandari", class: "11 IPA 2" },
+            { id: 8, username: "siswa8", password: "password123", name: "Hendra Setiawan", class: "11 IPS 1" },
+            { id: 9, username: "siswa9", password: "password123", name: "Indah Permata", class: "11 IPS 2" }
         ];
 
         let currentUser = null;
@@ -689,7 +758,13 @@
         function showUserDashboard() {
             document.getElementById('initial-login-page').classList.add('d-none');
             document.getElementById('user-dashboard').classList.remove('d-none');
+            
+            // Tampilkan informasi user
             document.getElementById('user-display-name').textContent = currentUser.name;
+            document.getElementById('user-class-badge').textContent = currentUser.class;
+            document.getElementById('current-user-class').textContent = currentUser.class;
+            document.getElementById('filter-class-display').textContent = currentUser.class;
+            
             updateUserExams();
         }
 
@@ -723,7 +798,7 @@
             if (subjects.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
+                        <td colspan="6" class="text-center text-muted py-4">
                             <i class="bi bi-inbox display-4 d-block mb-2"></i>
                             Belum ada mata pelajaran
                         </td>
@@ -740,6 +815,9 @@
                 
                 row.innerHTML = `
                     <td>${subject.name}</td>
+                    <td>
+                        <span class="badge bg-primary">${subject.class}</span>
+                    </td>
                     <td>${new Date(subject.date).toLocaleDateString('id-ID')}</td>
                     <td><a href="${subject.link}" target="_blank">Link Ujian</a></td>
                     <td>${statusBadge}</td>
@@ -782,6 +860,7 @@
                 document.getElementById('exam-link').value = subject.link;
                 document.getElementById('exam-date').value = subject.date;
                 document.getElementById('subject-status').value = subject.status;
+                document.getElementById('subject-class').value = subject.class;
                 document.getElementById('subject-modal-title').textContent = 'Edit Mata Pelajaran';
                 document.getElementById('subject-submit-btn').textContent = 'Update Mata Pelajaran';
                 
@@ -802,16 +881,22 @@
             }
         }
 
-        // Fungsi untuk update daftar ujian user - SEMUA SOAL DITAMPILKAN
+        // Fungsi untuk update daftar ujian user - FILTER BERDASARKAN KELAS USER
         function updateUserExams() {
             const container = document.getElementById('user-exams');
             container.innerHTML = '';
             
-            if (subjects.length === 0) {
+            // Filter soal berdasarkan kelas user
+            const userClass = currentUser.class;
+            const filteredSubjects = subjects.filter(subject => 
+                subject.class === userClass || subject.class === "Semua Kelas"
+            );
+            
+            if (filteredSubjects.length === 0) {
                 container.innerHTML = `
                     <div class="col-12">
                         <div class="alert alert-warning text-center">
-                            <h5><i class="bi bi-exclamation-triangle"></i> Tidak ada ujian yang tersedia</h5>
+                            <h5><i class="bi bi-exclamation-triangle"></i> Tidak ada ujian untuk kelas ${userClass}</h5>
                             <p>Silakan hubungi administrator untuk informasi lebih lanjut.</p>
                         </div>
                     </div>
@@ -819,8 +904,8 @@
                 return;
             }
             
-            // Tampilkan SEMUA mata pelajaran, baik aktif maupun tidak aktif
-            subjects.forEach(subject => {
+            // Tampilkan soal yang sesuai dengan kelas user
+            filteredSubjects.forEach(subject => {
                 const col = document.createElement('div');
                 col.className = 'col-md-4 mb-4';
                 
@@ -829,6 +914,8 @@
                 const statusBadge = isActive ? 
                     '<span class="exam-status badge bg-success">AKTIF</span>' : 
                     '<span class="exam-status badge bg-secondary">TIDAK AKTIF</span>';
+                
+                const classBadge = `<span class="class-badge">${subject.class}</span>`;
                 
                 const buttonHtml = isActive ? 
                     `<a href="${subject.link}" target="_blank" class="btn btn-primary w-100">
@@ -841,6 +928,7 @@
                 col.innerHTML = `
                     <div class="card ${cardClass} h-100">
                         <div class="card-body position-relative">
+                            ${classBadge}
                             ${statusBadge}
                             <h5 class="card-title">${subject.name}</h5>
                             <p class="card-text">
@@ -886,7 +974,9 @@
                 row.innerHTML = `
                     <td>${user.username}</td>
                     <td>${user.name}</td>
-                    <td>${user.class}</td>
+                    <td>
+                        <span class="badge bg-primary">${user.class}</span>
+                    </td>
                     <td>${user.password}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-danger delete-user" data-id="${user.id}">
@@ -925,12 +1015,20 @@
             const link = document.getElementById('exam-link').value;
             const date = document.getElementById('exam-date').value;
             const status = document.getElementById('subject-status').value;
+            const subjectClass = document.getElementById('subject-class').value;
             
             if (editingSubjectId) {
                 // Edit existing subject
                 const subjectIndex = subjects.findIndex(s => s.id === editingSubjectId);
                 if (subjectIndex !== -1) {
-                    subjects[subjectIndex] = { id: editingSubjectId, name, link, date, status };
+                    subjects[subjectIndex] = { 
+                        id: editingSubjectId, 
+                        name, 
+                        link, 
+                        date, 
+                        status, 
+                        class: subjectClass 
+                    };
                     showAlert('Mata pelajaran berhasil diperbarui!', 'success');
                 }
                 editingSubjectId = null;
@@ -941,7 +1039,8 @@
                     name,
                     link,
                     date,
-                    status
+                    status,
+                    class: subjectClass
                 };
                 subjects.push(newSubject);
                 showAlert('Mata pelajaran berhasil ditambahkan!', 'success');
