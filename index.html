@@ -205,9 +205,42 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
+        
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1055;
+        }
+        
+        .toast {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Validation styles */
+        .is-invalid {
+            border-color: var(--danger) !important;
+        }
+        
+        .invalid-feedback {
+            display: block;
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .form-text {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
     </style>
 </head>
 <body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container"></div>
+
     <!-- Halaman Login Awal (User/Siswa) -->
     <div id="initial-login-page">
         <div class="login-hero">
@@ -225,16 +258,22 @@
                                 <div class="text-center mb-4">
                                     <i class="bi bi-person-circle display-1 text-primary"></i>
                                     <h3 class="card-title mt-3">Login Siswa</h3>
-                                    <p class="text-muted">Masuk untuk mengikuti ujian</p>
+                                    <p class="text-muted">Masuk dengan NIS dan Password</p>
                                 </div>
                                 <form id="user-login-form">
                                     <div class="mb-3">
-                                        <label for="user-username" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="user-username" required>
+                                        <label for="user-nis" class="form-label">NIS (Nomor Induk Siswa)</label>
+                                        <input type="text" class="form-control" id="user-nis" required
+                                               pattern="[0-9]+" 
+                                               title="NIS harus berupa angka">
+                                        <div class="form-text">Masukkan NIS Anda (hanya angka)</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="user-password" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="user-password" required>
+                                        <input type="password" class="form-control" id="user-password" required
+                                               minlength="6"
+                                               title="Password minimal 6 karakter">
+                                        <div class="form-text">Password minimal 6 karakter</div>
                                     </div>
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-primary btn-lg">Masuk sebagai Siswa</button>
@@ -483,46 +522,52 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="subject-form">
+                    <form id="subject-form" novalidate>
                         <input type="hidden" id="subject-id">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="subject-name" class="form-label">Nama Mata Pelajaran</label>
-                                <input type="text" class="form-control" id="subject-name" required>
+                                <label for="subject-name" class="form-label">Nama Mata Pelajaran *</label>
+                                <input type="text" class="form-control" id="subject-name" required
+                                       minlength="3" maxlength="50">
+                                <div class="invalid-feedback">Nama mata pelajaran harus 3-50 karakter</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="subject-class" class="form-label">Kelas</label>
+                                <label for="subject-class" class="form-label">Kelas *</label>
                                 <select class="form-select" id="subject-class" required>
                                     <option value="">Pilih Kelas</option>
-                                    <option value="VII A">VII A</option>
-                                    <option value="VII B">VII B</option>
-                                    <option value="VII C">VII C</option>
-                                    <option value="VIII A">VIII A</option>
-                                    <option value="VIII B">VIII B</option>
-                                    <option value="VIII C">VIII C</option>
-                                    <option value="IX A">IX A</option>
-                                    <option value="IX B">IX B</option>
-                                    <option value="IX C">IX C</option>
+                                    <option value="10 IPA 1">10 IPA 1</option>
+                                    <option value="10 IPA 2">10 IPA 2</option>
+                                    <option value="10 IPS 1">10 IPS 1</option>
+                                    <option value="10 IPS 2">10 IPS 2</option>
+                                    <option value="11 IPA 1">11 IPA 1</option>
+                                    <option value="11 IPA 2">11 IPA 2</option>
+                                    <option value="11 IPS 1">11 IPS 1</option>
+                                    <option value="11 IPS 2">11 IPS 2</option>
                                     <option value="Semua Kelas">Semua Kelas</option>
                                 </select>
+                                <div class="invalid-feedback">Silakan pilih kelas</div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="exam-date" class="form-label">Tanggal Ujian</label>
+                                <label for="exam-date" class="form-label">Tanggal Ujian *</label>
                                 <input type="date" class="form-control" id="exam-date" required>
+                                <div class="invalid-feedback">Silakan pilih tanggal ujian</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="subject-status" class="form-label">Status</label>
-                                <select class="form-select" id="subject-status">
+                                <label for="subject-status" class="form-label">Status *</label>
+                                <select class="form-select" id="subject-status" required>
                                     <option value="active">Aktif</option>
                                     <option value="inactive">Tidak Aktif</option>
                                 </select>
+                                <div class="invalid-feedback">Silakan pilih status</div>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="exam-link" class="form-label">Link Ujian (Google Form)</label>
-                            <input type="url" class="form-control" id="exam-link" required>
+                            <label for="exam-link" class="form-label">Link Ujian (Google Form) *</label>
+                            <input type="url" class="form-control" id="exam-link" required
+                                   pattern="https?://.+">
+                            <div class="invalid-feedback">Link harus berupa URL yang valid (contoh: https://forms.google.com/...)</div>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary" id="subject-submit-btn">Simpan Mata Pelajaran</button>
@@ -555,12 +600,14 @@
                         <div class="tab-pane fade show active" id="importTab">
                             <div class="alert alert-info">
                                 <h6>Petunjuk Import:</h6>
-                                <p class="mb-1">1. Salin data dari Excel dengan format: Username | Password | Nama | Kelas</p>
+                                <p class="mb-1">1. Salin data dari Excel dengan format: <strong>NIS | Password | Nama | Kelas</strong></p>
                                 <p class="mb-0">2. Tempel data di area berikut, lalu klik Proses Data</p>
                             </div>
                             <div class="mb-3">
                                 <label for="excel-data" class="form-label">Data Excel</label>
-                                <textarea class="form-control" id="excel-data" rows="5" placeholder="Tempel data Excel di sini..."></textarea>
+                                <textarea class="form-control" id="excel-data" rows="5" 
+                                          placeholder="Tempel data Excel di sini...&#10;Contoh:&#10;123456  password123  Andi Pratama  10 IPA 1&#10;123457  password456  Budi Santoso  10 IPA 2"></textarea>
+                                <div class="form-text">Format: NIS (angka) | Password | Nama Lengkap | Kelas</div>
                             </div>
                             <div class="d-grid">
                                 <button type="button" class="btn btn-success" id="process-excel">Proses Data</button>
@@ -568,36 +615,42 @@
                         </div>
 
                         <div class="tab-pane fade" id="manualTab">
-                            <form id="user-form">
+                            <form id="user-form" novalidate>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="new-username" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="new-username" required>
+                                        <label for="new-nis" class="form-label">NIS (Nomor Induk Siswa) *</label>
+                                        <input type="text" class="form-control" id="new-nis" required
+                                               pattern="[0-9]+" minlength="6" maxlength="10">
+                                        <div class="invalid-feedback">NIS harus berupa angka, 6-10 digit</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="new-password" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="new-password" required>
+                                        <label for="new-password" class="form-label">Password *</label>
+                                        <input type="password" class="form-control" id="new-password" required
+                                               minlength="6">
+                                        <div class="invalid-feedback">Password minimal 6 karakter</div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="student-name" class="form-label">Nama Siswa</label>
-                                        <input type="text" class="form-control" id="student-name" required>
+                                        <label for="student-name" class="form-label">Nama Siswa *</label>
+                                        <input type="text" class="form-control" id="student-name" required
+                                               minlength="3" maxlength="50">
+                                        <div class="invalid-feedback">Nama harus 3-50 karakter</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="student-class" class="form-label">Kelas</label>
+                                        <label for="student-class" class="form-label">Kelas *</label>
                                         <select class="form-select" id="student-class" required>
                                             <option value="">Pilih Kelas</option>
-                                            <option value="VII A">VII A</option>
-                                            <option value="VII B">VII B</option>
-                                            <option value="VII C">VII C</option>
-                                            <option value="VIII A">VIII A</option>
-                                            <option value="VIII B">VIII B</option>
-                                            <option value="VIII C">VIII C</option>
-                                            <option value="IX A">IX A</option>
-                                            <option value="IX B">IX B</option>
-                                            <option value="IX C">IX C</option>
+                                            <option value="10 IPA 1">10 IPA 1</option>
+                                            <option value="10 IPA 2">10 IPA 2</option>
+                                            <option value="10 IPS 1">10 IPS 1</option>
+                                            <option value="10 IPS 2">10 IPS 2</option>
+                                            <option value="11 IPA 1">11 IPA 1</option>
+                                            <option value="11 IPA 2">11 IPA 2</option>
+                                            <option value="11 IPS 1">11 IPS 1</option>
+                                            <option value="11 IPS 2">11 IPS 2</option>
                                         </select>
+                                        <div class="invalid-feedback">Silakan pilih kelas</div>
                                     </div>
                                 </div>
                                 <div class="d-grid">
@@ -613,7 +666,7 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Username</th>
+                                        <th>NIS</th>
                                         <th>Nama</th>
                                         <th>Kelas</th>
                                         <th>Password</th>
@@ -634,31 +687,102 @@
     <!-- Bootstrap & JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Data contoh dengan atribut kelas
-        let subjects = [
-            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "VII A" },
-            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "VII A" },
-            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "VII B" },
-            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "VII C" },
-            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "VIII A" },
-            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "VIII B" },
-            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "VIII C" },
-            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "IX A" },
-            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "IX B" },
+        // Fungsi untuk menyimpan data ke localStorage
+        function saveToLocalStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                return false;
+            }
+        }
+
+        // Fungsi untuk memuat data dari localStorage
+        function loadFromLocalStorage(key, defaultValue = []) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : defaultValue;
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return defaultValue;
+            }
+        }
+
+        // Fungsi untuk menampilkan toast notification
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+            
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-bg-${type} border-0" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                autohide: true,
+                delay: 5000
+            });
+            
+            toast.show();
+            
+            // Remove toast from DOM after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function () {
+                this.remove();
+            });
+        }
+
+        // Fungsi untuk validasi form
+        function validateForm(form) {
+            let isValid = true;
+            const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            inputs.forEach(input => {
+                input.classList.remove('is-invalid');
+                
+                if (!input.checkValidity()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Data awal dengan localStorage
+        let subjects = loadFromLocalStorage('slador_subjects', [
+            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "10 IPA 1" },
+            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "10 IPA 1" },
+            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "10 IPA 2" },
+            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "10 IPS 1" },
+            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10 IPS 2" },
+            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11 IPA 1" },
+            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11 IPA 2" },
+            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "11 IPS 1" },
+            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "11 IPS 2" },
             { id: 10, name: "Ujian Umum", link: "https://forms.google.com/general-exam", date: "2023-12-10", status: "active", class: "Semua Kelas" }
-        ];
+        ]);
         
-        let users = [
-            { id: 1, username: "siswa1", password: "password123", name: "Andi Pratama", class: "VII A" },
-            { id: 2, username: "siswa2", password: "password123", name: "Budi Santoso", class: "VII A" },
-            { id: 3, username: "siswa3", password: "password123", name: "Citra Lestari", class: "VII B" },
-            { id: 4, username: "siswa4", password: "password123", name: "Dewi Anggraini", class: "VII C" },
-            { id: 5, username: "siswa5", password: "password123", name: "Eko Prasetyo", class: "VIII A" },
-            { id: 6, username: "siswa6", password: "password123", name: "Fajar Nugroho", class: "VIII B" },
-            { id: 7, username: "siswa7", password: "password123", name: "Gita Wulandari", class: "VIII C" },
-            { id: 8, username: "siswa8", password: "password123", name: "Hendra Setiawan", class: "IX A" },
-            { id: 9, username: "siswa9", password: "password123", name: "Indah Permata", class: "IX B" }
-        ];
+        let users = loadFromLocalStorage('slador_users', [
+            { id: 1, nis: "123456", password: "password123", name: "Andi Pratama", class: "10 IPA 1" },
+            { id: 2, nis: "123457", password: "password123", name: "Budi Santoso", class: "10 IPA 1" },
+            { id: 3, nis: "123458", password: "password123", name: "Citra Lestari", class: "10 IPA 2" },
+            { id: 4, nis: "123459", password: "password123", name: "Dewi Anggraini", class: "10 IPS 1" },
+            { id: 5, nis: "123460", password: "password123", name: "Eko Prasetyo", class: "10 IPS 2" },
+            { id: 6, nis: "123461", password: "password123", name: "Fajar Nugroho", class: "11 IPA 1" },
+            { id: 7, nis: "123462", password: "password123", name: "Gita Wulandari", class: "11 IPA 2" },
+            { id: 8, nis: "123463", password: "password123", name: "Hendra Setiawan", class: "11 IPS 1" },
+            { id: 9, nis: "123464", password: "password123", name: "Indah Permata", class: "11 IPS 2" }
+        ]);
 
         let currentUser = null;
         let editingSubjectId = null;
@@ -678,51 +802,74 @@
             document.getElementById('admin-nav-logout').addEventListener('click', handleLogout);
             document.getElementById('user-nav-logout').addEventListener('click', handleLogout);
             
+            // Real-time validation for forms
+            setupFormValidation();
+            
             updateCounts();
         });
 
-        // Fungsi untuk menampilkan alert
-        function showAlert(message, type, area = 'admin') {
-            const alertArea = area === 'user' ? 
-                document.getElementById('user-alert-area') : 
-                document.getElementById('alert-area');
-            
-            const alertId = 'alert-' + Date.now();
-            const alertHtml = `
-                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show alert-slide" role="alert">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            
-            alertArea.innerHTML = alertHtml;
-            
-            // Auto remove alert after 5 seconds
-            setTimeout(() => {
-                const alertElement = document.getElementById(alertId);
-                if (alertElement) {
-                    alertElement.remove();
+        // Setup form validation
+        function setupFormValidation() {
+            // User login form validation
+            const userLoginForm = document.getElementById('user-login-form');
+            userLoginForm.addEventListener('input', function(e) {
+                if (e.target.matches('input')) {
+                    validateField(e.target);
                 }
-            }, 5000);
+            });
+
+            // Subject form validation
+            const subjectForm = document.getElementById('subject-form');
+            subjectForm.addEventListener('input', function(e) {
+                if (e.target.matches('input, select')) {
+                    validateField(e.target);
+                }
+            });
+
+            // User form validation
+            const userForm = document.getElementById('user-form');
+            userForm.addEventListener('input', function(e) {
+                if (e.target.matches('input, select')) {
+                    validateField(e.target);
+                }
+            });
         }
 
-        // Fungsi untuk login user
+        // Validate individual field
+        function validateField(field) {
+            field.classList.remove('is-invalid');
+            
+            if (!field.checkValidity()) {
+                field.classList.add('is-invalid');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Fungsi untuk login user dengan NIS
         function handleUserLogin(e) {
             e.preventDefault();
-            const username = document.getElementById('user-username').value;
+            
+            if (!validateForm(e.target)) {
+                showToast('Harap periksa kembali data yang Anda masukkan', 'warning');
+                return;
+            }
+            
+            const nis = document.getElementById('user-nis').value;
             const password = document.getElementById('user-password').value;
             
             // Reset form
             e.target.reset();
             
             // Validasi sederhana
-            const user = users.find(u => u.username === username && u.password === password);
+            const user = users.find(u => u.nis === nis && u.password === password);
             if (user) {
                 currentUser = user;
                 showUserDashboard();
-                showAlert(`Selamat datang, ${user.name}!`, 'success', 'user');
+                showToast(`Selamat datang, ${user.name}!`, 'success');
             } else {
-                showAlert('Username atau password salah!', 'danger');
+                showToast('NIS atau password salah!', 'danger');
             }
         }
 
@@ -741,9 +888,9 @@
             if (username === 'admin' && password === 'admin123') {
                 currentUser = { username: 'admin', role: 'admin' };
                 showAdminDashboard();
-                showAlert('Login admin berhasil!', 'success');
+                showToast('Login admin berhasil!', 'success');
             } else {
-                showAlert('Username atau password admin salah!', 'danger');
+                showToast('Username atau password admin salah!', 'danger');
             }
         }
 
@@ -776,6 +923,7 @@
             document.getElementById('user-dashboard').classList.add('d-none');
             document.getElementById('initial-login-page').classList.remove('d-none');
             currentUser = null;
+            showToast('Anda telah logout', 'info');
         }
 
         // Fungsi untuk update counts di dashboard admin
@@ -877,9 +1025,10 @@
         function deleteSubject(id) {
             if (confirm('Apakah Anda yakin ingin menghapus mata pelajaran ini?')) {
                 subjects = subjects.filter(s => s.id !== id);
+                saveToLocalStorage('slador_subjects', subjects);
                 updateSubjectsTable();
                 updateCounts();
-                showAlert('Mata pelajaran berhasil dihapus!', 'success');
+                showToast('Mata pelajaran berhasil dihapus!', 'success');
             }
         }
 
@@ -974,7 +1123,7 @@
             users.forEach(user => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${user.username}</td>
+                    <td>${user.nis}</td>
                     <td>${user.name}</td>
                     <td>
                         <span class="badge bg-primary">${user.class}</span>
@@ -1002,15 +1151,21 @@
         function deleteUser(id) {
             if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
                 users = users.filter(u => u.id !== id);
+                saveToLocalStorage('slador_users', users);
                 updateUsersTable();
                 updateCounts();
-                showAlert('Siswa berhasil dihapus!', 'success');
+                showToast('Siswa berhasil dihapus!', 'success');
             }
         }
 
         // Fungsi untuk handle form mata pelajaran
         function handleSubjectForm(e) {
             e.preventDefault();
+            
+            if (!validateForm(e.target)) {
+                showToast('Harap periksa kembali data yang Anda masukkan', 'warning');
+                return;
+            }
             
             const id = document.getElementById('subject-id').value;
             const name = document.getElementById('subject-name').value;
@@ -1031,7 +1186,7 @@
                         status, 
                         class: subjectClass 
                     };
-                    showAlert('Mata pelajaran berhasil diperbarui!', 'success');
+                    showToast('Mata pelajaran berhasil diperbarui!', 'success');
                 }
                 editingSubjectId = null;
             } else {
@@ -1045,8 +1200,11 @@
                     class: subjectClass
                 };
                 subjects.push(newSubject);
-                showAlert('Mata pelajaran berhasil ditambahkan!', 'success');
+                showToast('Mata pelajaran berhasil ditambahkan!', 'success');
             }
+            
+            // Save to localStorage
+            saveToLocalStorage('slador_subjects', subjects);
             
             // Reset form dan update UI
             e.target.reset();
@@ -1064,20 +1222,25 @@
         function handleUserForm(e) {
             e.preventDefault();
             
-            const username = document.getElementById('new-username').value;
+            if (!validateForm(e.target)) {
+                showToast('Harap periksa kembali data yang Anda masukkan', 'warning');
+                return;
+            }
+            
+            const nis = document.getElementById('new-nis').value;
             const password = document.getElementById('new-password').value;
             const name = document.getElementById('student-name').value;
             const studentClass = document.getElementById('student-class').value;
             
-            // Cek duplikasi username
-            if (users.find(u => u.username === username)) {
-                showAlert('Username sudah digunakan!', 'danger');
+            // Cek duplikasi NIS
+            if (users.find(u => u.nis === nis)) {
+                showToast('NIS sudah digunakan!', 'danger');
                 return;
             }
             
             const newUser = {
                 id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
-                username,
+                nis,
                 password,
                 name,
                 class: studentClass
@@ -1085,36 +1248,61 @@
             
             users.push(newUser);
             
+            // Save to localStorage
+            saveToLocalStorage('slador_users', users);
+            
             // Reset form dan update UI
             e.target.reset();
             updateUsersTable();
             updateCounts();
             
-            showAlert('Siswa berhasil ditambahkan!', 'success');
+            showToast('Siswa berhasil ditambahkan!', 'success');
         }
 
         // Fungsi untuk proses data Excel
         function processExcelData() {
             const data = document.getElementById('excel-data').value.trim();
             if (!data) {
-                showAlert('Silakan tempel data dari Excel terlebih dahulu!', 'warning');
+                showToast('Silakan tempel data dari Excel terlebih dahulu!', 'warning');
                 return;
             }
             
             const lines = data.split('\n');
             let successCount = 0;
             let errorCount = 0;
+            let errors = [];
             
-            lines.forEach(line => {
+            lines.forEach((line, index) => {
                 if (line.trim()) {
                     const columns = line.split('\t').map(col => col.trim());
                     if (columns.length >= 4) {
-                        const [username, password, name, studentClass] = columns;
+                        const [nis, password, name, studentClass] = columns;
                         
-                        if (!users.find(u => u.username === username)) {
+                        // Validasi NIS (harus angka)
+                        if (!/^\d+$/.test(nis)) {
+                            errors.push(`Baris ${index + 1}: NIS harus berupa angka`);
+                            errorCount++;
+                            return;
+                        }
+                        
+                        // Validasi password (minimal 6 karakter)
+                        if (password.length < 6) {
+                            errors.push(`Baris ${index + 1}: Password minimal 6 karakter`);
+                            errorCount++;
+                            return;
+                        }
+                        
+                        // Validasi nama (minimal 3 karakter)
+                        if (name.length < 3) {
+                            errors.push(`Baris ${index + 1}: Nama minimal 3 karakter`);
+                            errorCount++;
+                            return;
+                        }
+                        
+                        if (!users.find(u => u.nis === nis)) {
                             const newUser = {
                                 id: users.length + 1,
-                                username,
+                                nis,
                                 password,
                                 name,
                                 class: studentClass
@@ -1122,13 +1310,18 @@
                             users.push(newUser);
                             successCount++;
                         } else {
+                            errors.push(`Baris ${index + 1}: NIS ${nis} sudah digunakan`);
                             errorCount++;
                         }
                     } else {
+                        errors.push(`Baris ${index + 1}: Format data tidak sesuai (harus 4 kolom)`);
                         errorCount++;
                     }
                 }
             });
+            
+            // Save to localStorage
+            saveToLocalStorage('slador_users', users);
             
             // Update UI
             updateUsersTable();
@@ -1137,10 +1330,15 @@
             
             let message = `Berhasil mengimpor ${successCount} siswa!`;
             if (errorCount > 0) {
-                message += ` ${errorCount} data gagal (format salah atau username duplikat).`;
+                message += ` ${errorCount} data gagal.`;
+                if (errors.length > 0) {
+                    errors.forEach(error => {
+                        showToast(error, 'warning');
+                    });
+                }
             }
             
-            showAlert(message, successCount > 0 ? 'success' : 'warning');
+            showToast(message, successCount > 0 ? 'success' : 'warning');
         }
     </script>
 </body>
