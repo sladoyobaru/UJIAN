@@ -246,6 +246,19 @@
         .class-option {
             padding-left: 20px;
         }
+        
+        /* Loading spinner */
+        .spinner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
     </style>
 </head>
 <body>
@@ -287,7 +300,10 @@
                                         <div class="form-text">Password minimal 6 karakter</div>
                                     </div>
                                     <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary btn-lg">Masuk sebagai Siswa</button>
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <span id="login-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
+                                            Masuk sebagai Siswa
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -371,6 +387,9 @@
                             </button>
                             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#userModal">
                                 <i class="bi bi-people-fill"></i> Kelola Siswa
+                            </button>
+                            <button class="btn btn-warning ms-2" id="sync-data-btn">
+                                <i class="bi bi-arrow-repeat"></i> Sync Data
                             </button>
                         </div>
                     </div>
@@ -609,7 +628,10 @@
                             <div class="invalid-feedback">Link harus berupa URL yang valid (contoh: https://forms.google.com/...)</div>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" id="subject-submit-btn">Simpan Mata Pelajaran</button>
+                            <button type="submit" class="btn btn-primary" id="subject-submit-btn">
+                                <span id="subject-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
+                                Simpan Mata Pelajaran
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -626,12 +648,21 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="alert alert-info">
+                        <h6>Informasi Database:</h6>
+                        <p class="mb-0">Data siswa tersimpan di Google Sheets dan dapat diakses dari semua device. 
+                        Untuk menambah data siswa, gunakan Google Sheets berikut: 
+                        <a href="https://docs.google.com/spreadsheets/d/1e6Xp58rBjyUMVJNlS7PAuHdNc0NTgBqwfJAmnS3PYWg/edit?usp=sharing" target="_blank">
+                            <i class="bi bi-box-arrow-up-right"></i> Buka Database Siswa
+                        </a></p>
+                    </div>
+
                     <ul class="nav nav-tabs" id="userTabs">
                         <li class="nav-item">
                             <a class="nav-link active" data-bs-toggle="tab" href="#importTab">Import dari Excel</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#manualTab">Tambah Manual</a>
+                            <a class="nav-link" data-bs-toggle="tab" href="#manualTab">Tambah Manual ke Database</a>
                         </li>
                     </ul>
 
@@ -649,7 +680,10 @@
                                 <div class="form-text">Format: NIS (angka) | Password | Nama Lengkap | Kelas</div>
                             </div>
                             <div class="d-grid">
-                                <button type="button" class="btn btn-success" id="process-excel">Proses Data</button>
+                                <button type="button" class="btn btn-success" id="process-excel">
+                                    <span id="excel-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
+                                    Proses Data
+                                </button>
                             </div>
                         </div>
 
@@ -721,7 +755,10 @@
                                     </div>
                                 </div>
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">Tambah Siswa</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <span id="user-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
+                                        Tambah Siswa ke Database
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -729,6 +766,11 @@
 
                     <div class="mt-4">
                         <h6>Daftar Siswa</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <button class="btn btn-sm btn-outline-primary" id="refresh-users-btn">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh Data
+                            </button>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -754,27 +796,37 @@
     <!-- Bootstrap & JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Fungsi untuk menyimpan data ke localStorage
-        function saveToLocalStorage(key, data) {
-            try {
-                localStorage.setItem(key, JSON.stringify(data));
-                return true;
-            } catch (e) {
-                console.error('Error saving to localStorage:', e);
-                return false;
-            }
-        }
+        // ============================================
+        // KONFIGURASI DATABASE EXTERNAL (GOOGLE SHEETS)
+        // ============================================
+        
+        // API URL untuk Google Apps Script (ganti dengan URL Anda)
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrDBmMRtFzYOgysyNV67Sfg3fHx34_jGG9N89EXxrKawtS97odXSTiUBngrc6dcUhl/exec';
+        
+        // API Key untuk autentikasi (ganti dengan API key Anda)
+        const API_KEY = 'SLADOR_EXAM_2024';
+        
+        // Cache untuk data
+        let subjects = [];
+        let users = [];
+        let currentUser = null;
+        let editingSubjectId = null;
+        let isOnline = navigator.onLine;
 
-        // Fungsi untuk memuat data dari localStorage
-        function loadFromLocalStorage(key, defaultValue = []) {
-            try {
-                const data = localStorage.getItem(key);
-                return data ? JSON.parse(data) : defaultValue;
-            } catch (e) {
-                console.error('Error loading from localStorage:', e);
-                return defaultValue;
-            }
-        }
+        // Daftar kelas yang tersedia
+        const availableClasses = [
+            '7A', '7B', '7C', '7D',
+            '8A', '8B', '8C', '8D', 
+            '9A', '9B', '9C', '9D',
+            '10A', '10B', '10C', '10D',
+            '11A', '11B', '11C', '11D',
+            '12A', '12B', '12C', '12D',
+            'Semua Kelas'
+        ];
+
+        // ============================================
+        // FUNGSI UTILITAS
+        // ============================================
 
         // Fungsi untuk menampilkan toast notification
         function showToast(message, type = 'info') {
@@ -825,49 +877,221 @@
             return isValid;
         }
 
-        // Data awal dengan localStorage - Diperbarui dengan kelas baru
-        let subjects = loadFromLocalStorage('slador_subjects', [
-            { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "7A" },
-            { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "7A" },
-            { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "8B" },
-            { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "9C" },
-            { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10D" },
-            { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11A" },
-            { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11B" },
-            { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "12C" },
-            { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "12D" },
-            { id: 10, name: "Ujian Umum", link: "https://forms.google.com/general-exam", date: "2023-12-10", status: "active", class: "Semua Kelas" }
-        ]);
-        
-        let users = loadFromLocalStorage('slador_users', [
-            { id: 1, nis: "230701", password: "password123", name: "Andi Pratama", class: "7A" },
-            { id: 2, nis: "230702", password: "password123", name: "Budi Santoso", class: "7B" },
-            { id: 3, nis: "230703", password: "password123", name: "Citra Lestari", class: "7C" },
-            { id: 4, nis: "230704", password: "password123", name: "Dewi Anggraini", class: "7D" },
-            { id: 5, nis: "220801", password: "password123", name: "Eko Prasetyo", class: "8A" },
-            { id: 6, nis: "220802", password: "password123", name: "Fajar Nugroho", class: "8B" },
-            { id: 7, nis: "220803", password: "password123", name: "Gita Wulandari", class: "8C" },
-            { id: 8, nis: "220804", password: "password123", name: "Hendra Setiawan", class: "8D" },
-            { id: 9, nis: "210901", password: "password123", name: "Indah Permata", class: "9A" },
-            { id: 10, nis: "210902", password: "password123", name: "Joko Widodo", class: "9B" }
-        ]);
+        // Fungsi untuk toggle spinner
+        function toggleSpinner(buttonId, show) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                const spinner = button.querySelector('.spinner-border');
+                if (spinner) {
+                    spinner.classList.toggle('d-none', !show);
+                }
+                button.disabled = show;
+            }
+        }
 
-        let currentUser = null;
-        let editingSubjectId = null;
+        // ============================================
+        // FUNGSI DATABASE EXTERNAL
+        // ============================================
 
-        // Daftar kelas yang tersedia
-        const availableClasses = [
-            '7A', '7B', '7C', '7D',
-            '8A', '8B', '8C', '8D', 
-            '9A', '9B', '9C', '9D',
-            '10A', '10B', '10C', '10D',
-            '11A', '11B', '11C', '11D',
-            '12A', '12B', '12C', '12D',
-            'Semua Kelas'
-        ];
+        // Fungsi untuk fetch data dari Google Sheets
+        async function fetchDataFromSheets(type) {
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get&type=${type}&key=${API_KEY}`);
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.data;
+                } else {
+                    throw new Error(data.message || 'Failed to fetch data');
+                }
+            } catch (error) {
+                console.error(`Error fetching ${type}:`, error);
+                showToast(`Gagal memuat data ${type}: ${error.message}`, 'danger');
+                return [];
+            }
+        }
+
+        // Fungsi untuk save data ke Google Sheets
+        async function saveDataToSheets(type, data) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'save',
+                        type: type,
+                        key: API_KEY,
+                        data: data
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    return true;
+                } else {
+                    throw new Error(result.message || 'Failed to save data');
+                }
+            } catch (error) {
+                console.error(`Error saving ${type}:`, error);
+                showToast(`Gagal menyimpan data ${type}: ${error.message}`, 'danger');
+                return false;
+            }
+        }
+
+        // Fungsi untuk update data di Google Sheets
+        async function updateDataInSheets(type, id, updatedData) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'update',
+                        type: type,
+                        key: API_KEY,
+                        id: id,
+                        data: updatedData
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    return true;
+                } else {
+                    throw new Error(result.message || 'Failed to update data');
+                }
+            } catch (error) {
+                console.error(`Error updating ${type}:`, error);
+                showToast(`Gagal mengupdate data ${type}: ${error.message}`, 'danger');
+                return false;
+            }
+        }
+
+        // Fungsi untuk delete data dari Google Sheets
+        async function deleteDataFromSheets(type, id) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        type: type,
+                        key: API_KEY,
+                        id: id
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    return true;
+                } else {
+                    throw new Error(result.message || 'Failed to delete data');
+                }
+            } catch (error) {
+                console.error(`Error deleting ${type}:`, error);
+                showToast(`Gagal menghapus data ${type}: ${error.message}`, 'danger');
+                return false;
+            }
+        }
+
+        // Fungsi untuk sync data
+        async function syncData() {
+            try {
+                showToast('Menyinkronkan data dengan server...', 'info');
+                
+                // Load subjects from server
+                const serverSubjects = await fetchDataFromSheets('subjects');
+                if (serverSubjects.length > 0) {
+                    subjects = serverSubjects;
+                    saveToLocalStorage('slador_subjects', subjects);
+                }
+                
+                // Load users from server
+                const serverUsers = await fetchDataFromSheets('users');
+                if (serverUsers.length > 0) {
+                    users = serverUsers;
+                    saveToLocalStorage('slador_users', users);
+                }
+                
+                updateSubjectsTable();
+                updateUsersTable();
+                updateCounts();
+                
+                showToast('Data berhasil disinkronkan!', 'success');
+            } catch (error) {
+                console.error('Error syncing data:', error);
+                showToast('Gagal menyinkronkan data', 'danger');
+            }
+        }
+
+        // ============================================
+        // FUNGSI LOCALSTORAGE (FALLBACK)
+        // ============================================
+
+        // Fungsi untuk menyimpan data ke localStorage
+        function saveToLocalStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                return false;
+            }
+        }
+
+        // Fungsi untuk memuat data dari localStorage
+        function loadFromLocalStorage(key, defaultValue = []) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : defaultValue;
+            } catch (e) {
+                console.error('Error loading from localStorage:', e);
+                return defaultValue;
+            }
+        }
+
+        // ============================================
+        // INISIALISASI APLIKASI
+        // ============================================
 
         // Inisialisasi halaman
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Cek koneksi internet
+            window.addEventListener('online', () => {
+                isOnline = true;
+                showToast('Koneksi internet tersedia', 'success');
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                showToast('Tidak ada koneksi internet, menggunakan data lokal', 'warning');
+            });
+
             // Event listener untuk login forms
             document.getElementById('user-login-form').addEventListener('submit', handleUserLogin);
             document.getElementById('admin-login-form').addEventListener('submit', handleAdminLogin);
@@ -876,6 +1100,11 @@
             document.getElementById('subject-form').addEventListener('submit', handleSubjectForm);
             document.getElementById('user-form').addEventListener('submit', handleUserForm);
             document.getElementById('process-excel').addEventListener('click', processExcelData);
+            document.getElementById('sync-data-btn').addEventListener('click', syncData);
+            document.getElementById('refresh-users-btn').addEventListener('click', async () => {
+                await loadUsers();
+                updateUsersTable();
+            });
             
             // Event listener untuk logout
             document.getElementById('admin-nav-logout').addEventListener('click', handleLogout);
@@ -883,6 +1112,9 @@
             
             // Real-time validation for forms
             setupFormValidation();
+            
+            // Load initial data
+            await loadInitialData();
             
             updateCounts();
         });
@@ -926,8 +1158,90 @@
             return true;
         }
 
+        // Load initial data
+        async function loadInitialData() {
+            try {
+                if (isOnline) {
+                    // Try to load from server first
+                    subjects = await fetchDataFromSheets('subjects');
+                    users = await fetchDataFromSheets('users');
+                    
+                    if (subjects.length === 0) {
+                        subjects = loadFromLocalStorage('slador_subjects', getDefaultSubjects());
+                    }
+                    if (users.length === 0) {
+                        users = loadFromLocalStorage('slador_users', getDefaultUsers());
+                    }
+                } else {
+                    // Use local data
+                    subjects = loadFromLocalStorage('slador_subjects', getDefaultSubjects());
+                    users = loadFromLocalStorage('slador_users', getDefaultUsers());
+                    showToast('Menggunakan data lokal (offline mode)', 'info');
+                }
+                
+                // Save to localStorage as backup
+                saveToLocalStorage('slador_subjects', subjects);
+                saveToLocalStorage('slador_users', users);
+                
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+                subjects = loadFromLocalStorage('slador_subjects', getDefaultSubjects());
+                users = loadFromLocalStorage('slador_users', getDefaultUsers());
+                showToast('Menggunakan data lokal', 'info');
+            }
+        }
+
+        // Load users from server
+        async function loadUsers() {
+            try {
+                const serverUsers = await fetchDataFromSheets('users');
+                if (serverUsers.length > 0) {
+                    users = serverUsers;
+                    saveToLocalStorage('slador_users', users);
+                    showToast('Data siswa diperbarui dari server', 'success');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        // Default data
+        function getDefaultSubjects() {
+            return [
+                { id: 1, name: "Matematika", link: "https://forms.google.com/math-exam", date: "2023-11-15", status: "active", class: "7A" },
+                { id: 2, name: "Bahasa Indonesia", link: "https://forms.google.com/indonesian-exam", date: "2023-11-17", status: "inactive", class: "7A" },
+                { id: 3, name: "IPA", link: "https://forms.google.com/science-exam", date: "2023-11-20", status: "active", class: "8B" },
+                { id: 4, name: "Bahasa Inggris", link: "https://forms.google.com/english-exam", date: "2023-11-22", status: "active", class: "9C" },
+                { id: 5, name: "IPS", link: "https://forms.google.com/social-exam", date: "2023-11-25", status: "active", class: "10D" },
+                { id: 6, name: "Fisika", link: "https://forms.google.com/physics-exam", date: "2023-11-28", status: "active", class: "11A" },
+                { id: 7, name: "Kimia", link: "https://forms.google.com/chemistry-exam", date: "2023-11-30", status: "active", class: "11B" },
+                { id: 8, name: "Sejarah", link: "https://forms.google.com/history-exam", date: "2023-12-02", status: "active", class: "12C" },
+                { id: 9, name: "Ekonomi", link: "https://forms.google.com/economy-exam", date: "2023-12-05", status: "active", class: "12D" },
+                { id: 10, name: "Ujian Umum", link: "https://forms.google.com/general-exam", date: "2023-12-10", status: "active", class: "Semua Kelas" }
+            ];
+        }
+
+        function getDefaultUsers() {
+            return [
+                { id: 1, nis: "230701", password: "password123", name: "Andi Pratama", class: "7A" },
+                { id: 2, nis: "230702", password: "password123", name: "Budi Santoso", class: "7B" },
+                { id: 3, nis: "230703", password: "password123", name: "Citra Lestari", class: "7C" },
+                { id: 4, nis: "230704", password: "password123", name: "Dewi Anggraini", class: "7D" },
+                { id: 5, nis: "220801", password: "password123", name: "Eko Prasetyo", class: "8A" },
+                { id: 6, nis: "220802", password: "password123", name: "Fajar Nugroho", class: "8B" },
+                { id: 7, nis: "220803", password: "password123", name: "Gita Wulandari", class: "8C" },
+                { id: 8, nis: "220804", password: "password123", name: "Hendra Setiawan", class: "8D" },
+                { id: 9, nis: "210901", password: "password123", name: "Indah Permata", class: "9A" },
+                { id: 10, nis: "210902", password: "password123", name: "Joko Widodo", class: "9B" }
+            ];
+        }
+
+        // ============================================
+        // FUNGSI UTAMA APLIKASI
+        // ============================================
+
         // Fungsi untuk login user dengan NIS
-        function handleUserLogin(e) {
+        async function handleUserLogin(e) {
             e.preventDefault();
             
             if (!validateForm(e.target)) {
@@ -938,17 +1252,34 @@
             const nis = document.getElementById('user-nis').value;
             const password = document.getElementById('user-password').value;
             
-            // Reset form
-            e.target.reset();
+            // Show spinner
+            toggleSpinner('login-spinner', true);
             
-            // Validasi sederhana
-            const user = users.find(u => u.nis === nis && u.password === password);
-            if (user) {
-                currentUser = user;
-                showUserDashboard();
-                showToast(`Selamat datang, ${user.name}!`, 'success');
-            } else {
-                showToast('NIS atau password salah!', 'danger');
+            try {
+                // Reset form
+                e.target.reset();
+                
+                // Check in local data first
+                let user = users.find(u => u.nis === nis && u.password === password);
+                
+                if (!user && isOnline) {
+                    // If not found locally and online, try to sync and check again
+                    await loadUsers();
+                    user = users.find(u => u.nis === nis && u.password === password);
+                }
+                
+                if (user) {
+                    currentUser = user;
+                    showUserDashboard();
+                    showToast(`Selamat datang, ${user.name}!`, 'success');
+                } else {
+                    showToast('NIS atau password salah!', 'danger');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Terjadi kesalahan saat login', 'danger');
+            } finally {
+                toggleSpinner('login-spinner', false);
             }
         }
 
@@ -1101,17 +1432,31 @@
         }
 
         // Fungsi untuk hapus mata pelajaran
-        function deleteSubject(id) {
+        async function deleteSubject(id) {
             if (confirm('Apakah Anda yakin ingin menghapus mata pelajaran ini?')) {
-                subjects = subjects.filter(s => s.id !== id);
-                saveToLocalStorage('slador_subjects', subjects);
-                updateSubjectsTable();
-                updateCounts();
-                showToast('Mata pelajaran berhasil dihapus!', 'success');
+                try {
+                    // Try to delete from server if online
+                    if (isOnline) {
+                        const success = await deleteDataFromSheets('subjects', id);
+                        if (!success) {
+                            showToast('Gagal menghapus dari server, hanya dihapus dari data lokal', 'warning');
+                        }
+                    }
+                    
+                    // Delete from local data
+                    subjects = subjects.filter(s => s.id !== id);
+                    saveToLocalStorage('slador_subjects', subjects);
+                    updateSubjectsTable();
+                    updateCounts();
+                    showToast('Mata pelajaran berhasil dihapus!', 'success');
+                } catch (error) {
+                    console.error('Error deleting subject:', error);
+                    showToast('Gagal menghapus mata pelajaran', 'danger');
+                }
             }
         }
 
-        // Fungsi untuk update daftar ujian user - FILTER BERDASARKAN KELAS USER
+        // Fungsi untuk update daftar ujian user
         function updateUserExams() {
             const container = document.getElementById('user-exams');
             container.innerHTML = '';
@@ -1227,18 +1572,32 @@
         }
 
         // Fungsi untuk hapus user
-        function deleteUser(id) {
+        async function deleteUser(id) {
             if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
-                users = users.filter(u => u.id !== id);
-                saveToLocalStorage('slador_users', users);
-                updateUsersTable();
-                updateCounts();
-                showToast('Siswa berhasil dihapus!', 'success');
+                try {
+                    // Try to delete from server if online
+                    if (isOnline) {
+                        const success = await deleteDataFromSheets('users', id);
+                        if (!success) {
+                            showToast('Gagal menghapus dari server, hanya dihapus dari data lokal', 'warning');
+                        }
+                    }
+                    
+                    // Delete from local data
+                    users = users.filter(u => u.id !== id);
+                    saveToLocalStorage('slador_users', users);
+                    updateUsersTable();
+                    updateCounts();
+                    showToast('Siswa berhasil dihapus!', 'success');
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    showToast('Gagal menghapus siswa', 'danger');
+                }
             }
         }
 
         // Fungsi untuk handle form mata pelajaran
-        function handleSubjectForm(e) {
+        async function handleSubjectForm(e) {
             e.preventDefault();
             
             if (!validateForm(e.target)) {
@@ -1253,52 +1612,81 @@
             const status = document.getElementById('subject-status').value;
             const subjectClass = document.getElementById('subject-class').value;
             
-            if (editingSubjectId) {
-                // Edit existing subject
-                const subjectIndex = subjects.findIndex(s => s.id === editingSubjectId);
-                if (subjectIndex !== -1) {
-                    subjects[subjectIndex] = { 
-                        id: editingSubjectId, 
-                        name, 
-                        link, 
-                        date, 
-                        status, 
-                        class: subjectClass 
+            toggleSpinner('subject-spinner', true);
+            
+            try {
+                if (editingSubjectId) {
+                    // Edit existing subject
+                    const subjectIndex = subjects.findIndex(s => s.id === editingSubjectId);
+                    if (subjectIndex !== -1) {
+                        const updatedSubject = { 
+                            id: editingSubjectId, 
+                            name, 
+                            link, 
+                            date, 
+                            status, 
+                            class: subjectClass 
+                        };
+                        
+                        // Update in server if online
+                        if (isOnline) {
+                            const success = await updateDataInSheets('subjects', editingSubjectId, updatedSubject);
+                            if (!success) {
+                                showToast('Gagal update di server, hanya diupdate di data lokal', 'warning');
+                            }
+                        }
+                        
+                        subjects[subjectIndex] = updatedSubject;
+                        showToast('Mata pelajaran berhasil diperbarui!', 'success');
+                    }
+                    editingSubjectId = null;
+                } else {
+                    // Add new subject
+                    const newId = subjects.length > 0 ? Math.max(...subjects.map(s => s.id)) + 1 : 1;
+                    const newSubject = {
+                        id: newId,
+                        name,
+                        link,
+                        date,
+                        status,
+                        class: subjectClass
                     };
-                    showToast('Mata pelajaran berhasil diperbarui!', 'success');
+                    
+                    // Save to server if online
+                    if (isOnline) {
+                        const success = await saveDataToSheets('subjects', newSubject);
+                        if (!success) {
+                            showToast('Gagal menyimpan ke server, hanya disimpan di data lokal', 'warning');
+                        }
+                    }
+                    
+                    subjects.push(newSubject);
+                    showToast('Mata pelajaran berhasil ditambahkan!', 'success');
                 }
-                editingSubjectId = null;
-            } else {
-                // Add new subject
-                const newSubject = {
-                    id: subjects.length > 0 ? Math.max(...subjects.map(s => s.id)) + 1 : 1,
-                    name,
-                    link,
-                    date,
-                    status,
-                    class: subjectClass
-                };
-                subjects.push(newSubject);
-                showToast('Mata pelajaran berhasil ditambahkan!', 'success');
+                
+                // Save to localStorage
+                saveToLocalStorage('slador_subjects', subjects);
+                
+                // Reset form dan update UI
+                e.target.reset();
+                document.getElementById('subject-modal-title').textContent = 'Tambah Mata Pelajaran';
+                document.getElementById('subject-submit-btn').textContent = 'Simpan Mata Pelajaran';
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('subjectModal'));
+                modal.hide();
+                
+                updateSubjectsTable();
+                updateCounts();
+            } catch (error) {
+                console.error('Error saving subject:', error);
+                showToast('Terjadi kesalahan saat menyimpan data', 'danger');
+            } finally {
+                toggleSpinner('subject-spinner', false);
             }
-            
-            // Save to localStorage
-            saveToLocalStorage('slador_subjects', subjects);
-            
-            // Reset form dan update UI
-            e.target.reset();
-            document.getElementById('subject-modal-title').textContent = 'Tambah Mata Pelajaran';
-            document.getElementById('subject-submit-btn').textContent = 'Simpan Mata Pelajaran';
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('subjectModal'));
-            modal.hide();
-            
-            updateSubjectsTable();
-            updateCounts();
         }
 
         // Fungsi untuk handle form user manual
-        function handleUserForm(e) {
+        async function handleUserForm(e) {
             e.preventDefault();
             
             if (!validateForm(e.target)) {
@@ -1323,114 +1711,154 @@
                 return;
             }
             
-            const newUser = {
-                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
-                nis,
-                password,
-                name,
-                class: studentClass
-            };
+            toggleSpinner('user-spinner', true);
             
-            users.push(newUser);
-            
-            // Save to localStorage
-            saveToLocalStorage('slador_users', users);
-            
-            // Reset form dan update UI
-            e.target.reset();
-            updateUsersTable();
-            updateCounts();
-            
-            showToast('Siswa berhasil ditambahkan!', 'success');
+            try {
+                const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
+                const newUser = {
+                    id: newId,
+                    nis,
+                    password,
+                    name,
+                    class: studentClass
+                };
+                
+                // Save to server if online
+                if (isOnline) {
+                    const success = await saveDataToSheets('users', newUser);
+                    if (!success) {
+                        showToast('Gagal menyimpan ke server, hanya disimpan di data lokal', 'warning');
+                    }
+                }
+                
+                users.push(newUser);
+                
+                // Save to localStorage
+                saveToLocalStorage('slador_users', users);
+                
+                // Reset form dan update UI
+                e.target.reset();
+                updateUsersTable();
+                updateCounts();
+                
+                showToast('Siswa berhasil ditambahkan!', 'success');
+            } catch (error) {
+                console.error('Error saving user:', error);
+                showToast('Terjadi kesalahan saat menyimpan data', 'danger');
+            } finally {
+                toggleSpinner('user-spinner', false);
+            }
         }
 
         // Fungsi untuk proses data Excel
-        function processExcelData() {
+        async function processExcelData() {
             const data = document.getElementById('excel-data').value.trim();
             if (!data) {
                 showToast('Silakan tempel data dari Excel terlebih dahulu!', 'warning');
                 return;
             }
             
+            toggleSpinner('excel-spinner', true);
+            
             const lines = data.split('\n');
             let successCount = 0;
             let errorCount = 0;
             let errors = [];
             
-            lines.forEach((line, index) => {
-                if (line.trim()) {
-                    const columns = line.split('\t').map(col => col.trim());
-                    if (columns.length >= 4) {
-                        const [nis, password, name, studentClass] = columns;
-                        
-                        // Validasi NIS (harus angka)
-                        if (!/^\d+$/.test(nis)) {
-                            errors.push(`Baris ${index + 1}: NIS harus berupa angka`);
-                            errorCount++;
-                            return;
-                        }
-                        
-                        // Validasi password (minimal 6 karakter)
-                        if (password.length < 6) {
-                            errors.push(`Baris ${index + 1}: Password minimal 6 karakter`);
-                            errorCount++;
-                            return;
-                        }
-                        
-                        // Validasi nama (minimal 3 karakter)
-                        if (name.length < 3) {
-                            errors.push(`Baris ${index + 1}: Nama minimal 3 karakter`);
-                            errorCount++;
-                            return;
-                        }
-                        
-                        // Validasi kelas
-                        if (!availableClasses.includes(studentClass) && studentClass !== 'Semua Kelas') {
-                            errors.push(`Baris ${index + 1}: Kelas "${studentClass}" tidak valid`);
-                            errorCount++;
-                            return;
-                        }
-                        
-                        if (!users.find(u => u.nis === nis)) {
-                            const newUser = {
-                                id: users.length + 1,
-                                nis,
-                                password,
-                                name,
-                                class: studentClass
-                            };
-                            users.push(newUser);
-                            successCount++;
+            try {
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (line.trim()) {
+                        const columns = line.split('\t').map(col => col.trim());
+                        if (columns.length >= 4) {
+                            const [nis, password, name, studentClass] = columns;
+                            
+                            // Validasi NIS (harus angka)
+                            if (!/^\d+$/.test(nis)) {
+                                errors.push(`Baris ${i + 1}: NIS harus berupa angka`);
+                                errorCount++;
+                                continue;
+                            }
+                            
+                            // Validasi password (minimal 6 karakter)
+                            if (password.length < 6) {
+                                errors.push(`Baris ${i + 1}: Password minimal 6 karakter`);
+                                errorCount++;
+                                continue;
+                            }
+                            
+                            // Validasi nama (minimal 3 karakter)
+                            if (name.length < 3) {
+                                errors.push(`Baris ${i + 1}: Nama minimal 3 karakter`);
+                                errorCount++;
+                                continue;
+                            }
+                            
+                            // Validasi kelas
+                            if (!availableClasses.includes(studentClass) && studentClass !== 'Semua Kelas') {
+                                errors.push(`Baris ${i + 1}: Kelas "${studentClass}" tidak valid`);
+                                errorCount++;
+                                continue;
+                            }
+                            
+                            if (!users.find(u => u.nis === nis)) {
+                                const newId = users.length + 1;
+                                const newUser = {
+                                    id: newId,
+                                    nis,
+                                    password,
+                                    name,
+                                    class: studentClass
+                                };
+                                
+                                // Save to server if online
+                                if (isOnline) {
+                                    const success = await saveDataToSheets('users', newUser);
+                                    if (!success) {
+                                        errors.push(`Baris ${i + 1}: Gagal menyimpan ke server`);
+                                        errorCount++;
+                                        continue;
+                                    }
+                                }
+                                
+                                users.push(newUser);
+                                successCount++;
+                            } else {
+                                errors.push(`Baris ${i + 1}: NIS ${nis} sudah digunakan`);
+                                errorCount++;
+                            }
                         } else {
-                            errors.push(`Baris ${index + 1}: NIS ${nis} sudah digunakan`);
+                            errors.push(`Baris ${i + 1}: Format data tidak sesuai (harus 4 kolom)`);
                             errorCount++;
                         }
-                    } else {
-                        errors.push(`Baris ${index + 1}: Format data tidak sesuai (harus 4 kolom)`);
-                        errorCount++;
                     }
                 }
-            });
-            
-            // Save to localStorage
-            saveToLocalStorage('slador_users', users);
-            
-            // Update UI
-            updateUsersTable();
-            updateCounts();
-            document.getElementById('excel-data').value = '';
-            
-            let message = `Berhasil mengimpor ${successCount} siswa!`;
-            if (errorCount > 0) {
-                message += ` ${errorCount} data gagal.`;
-                if (errors.length > 0) {
-                    errors.forEach(error => {
-                        showToast(error, 'warning');
-                    });
+                
+                // Save to localStorage
+                saveToLocalStorage('slador_users', users);
+                
+                // Update UI
+                updateUsersTable();
+                updateCounts();
+                document.getElementById('excel-data').value = '';
+                
+                let message = `Berhasil mengimpor ${successCount} siswa!`;
+                if (errorCount > 0) {
+                    message += ` ${errorCount} data gagal.`;
+                    if (errors.length > 0) {
+                        errors.forEach(error => {
+                            showToast(error, 'warning');
+                        });
+                    }
                 }
+                
+                showToast(message, successCount > 0 ? 'success' : 'warning');
+            } catch (error) {
+                console.error('Error processing Excel:', error);
+                showToast('Terjadi kesalahan saat memproses data', 'danger');
+            } finally {
+                toggleSpinner('excel-spinner', false);
             }
-            
-            showToast(message, successCount > 0 ? 'success' : 'warning');
         }
     </script>
 </body>
